@@ -1,14 +1,17 @@
 /**
  * Water Beacon - Dedicated Operator & Technician Console Logic
- * Authentication, Telemetry Overrides, Citizen Issue Tracking, and Maintenance Scheduling.
+ * Authentication with Village Selector, Telemetry Overrides, Citizen Issue Tracking, and Maintenance Scheduling.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
     const authScreen = document.getElementById("operator-auth-screen");
     const dashboardScreen = document.getElementById("operator-dashboard-screen");
     const loginForm = document.getElementById("form-operator-login");
+    const loginVillageSelect = document.getElementById("login-op-village");
+    const loginNameInput = document.getElementById("login-op-name");
     const logoutBtn = document.getElementById("btn-operator-logout");
     const headerOpName = document.getElementById("header-operator-name");
+    const headerOpVillage = document.getElementById("header-operator-village");
 
     // Stats
     const statTotal = document.getElementById("stat-total-plants");
@@ -42,20 +45,60 @@ document.addEventListener("DOMContentLoaded", () => {
     let allMachines = [];
     let selectedStatus = "AVAILABLE";
 
+    // Preload Villages into the Login Selector
+    async function populateLoginVillages() {
+        if (!loginVillageSelect) return;
+
+        try {
+            const res = await fetch("/api/machines");
+            if (!res.ok) return;
+            const machines = await res.json();
+            allMachines = machines;
+
+            loginVillageSelect.innerHTML = machines.map(m => `
+                <option value="${m.id}" data-village-id="${m.village_id}" data-village-name="${m.village_name}" data-op-name="${m.operator_name || 'Panchayat Operator'}">
+                    ${m.village_name} (${m.district}) — ${m.machine_name}
+                </option>
+            `).join("");
+
+            // Sync operator name when village is changed
+            loginVillageSelect.addEventListener("change", () => {
+                const opt = loginVillageSelect.selectedOptions[0];
+                if (opt && loginNameInput) {
+                    const defaultOp = opt.getAttribute("data-op-name");
+                    if (defaultOp) loginNameInput.value = defaultOp;
+                }
+            });
+
+            // Trigger initial sync
+            if (loginVillageSelect.options.length > 0) {
+                const firstOpt = loginVillageSelect.options[0];
+                const defaultOp = firstOpt.getAttribute("data-op-name");
+                if (defaultOp && loginNameInput) loginNameInput.value = defaultOp;
+            }
+
+        } catch (e) {
+            console.warn("Failed to populate login villages:", e);
+        }
+    }
+
     // 1. Check Authentication Session
     function checkAuth() {
         const token = sessionStorage.getItem("wb_operator_session");
         const opName = sessionStorage.getItem("wb_operator_name") || "Panchayat Operator";
+        const opVillage = sessionStorage.getItem("wb_operator_village_name") || "Village RO Plant";
 
         if (token) {
             authScreen.style.display = "none";
             dashboardScreen.style.display = "block";
-            headerOpName.textContent = opName;
+            if (headerOpName) headerOpName.textContent = opName;
+            if (headerOpVillage) headerOpVillage.textContent = `${opVillage} Station`;
             if (nameInput) nameInput.value = opName;
             loadDashboard();
         } else {
             authScreen.style.display = "flex";
             dashboardScreen.style.display = "none";
+            populateLoginVillages();
         }
     }
 
@@ -65,6 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const pin = document.getElementById("login-op-pin").value.trim();
             const name = document.getElementById("login-op-name").value.trim();
+            const selectedOpt = loginVillageSelect?.selectedOptions[0];
+            const villageId = selectedOpt?.getAttribute("data-village-id");
+            const villageName = selectedOpt?.getAttribute("data-village-name") || "Village RO Station";
+            const machineId = selectedOpt?.value;
             const btn = document.getElementById("btn-login-submit");
 
             btn.disabled = true;
@@ -73,7 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch("/api/operator/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ pin, operator_name: name })
+                    body: JSON.stringify({
+                        pin,
+                        operator_name: name,
+                        village_id: villageId,
+                        village_name: villageName
+                    })
                 });
 
                 const data = await res.json();
@@ -84,8 +136,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 sessionStorage.setItem("wb_operator_session", data.operator.session_token);
                 sessionStorage.setItem("wb_operator_name", data.operator.name);
+                sessionStorage.setItem("wb_operator_village_id", villageId || "1");
+                sessionStorage.setItem("wb_operator_village_name", villageName);
+                if (machineId) sessionStorage.setItem("wb_operator_machine_id", machineId);
 
-                showToast("success", "Operator Console unlocked. Welcome, " + data.operator.name);
+                showToast("success", `Signed in as ${data.operator.name} for ${villageName} Station.`);
                 checkAuth();
 
             } catch (err) {
@@ -102,6 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", () => {
             sessionStorage.removeItem("wb_operator_session");
             sessionStorage.removeItem("wb_operator_name");
+            sessionStorage.removeItem("wb_operator_village_id");
+            sessionStorage.removeItem("wb_operator_village_name");
+            sessionStorage.removeItem("wb_operator_machine_id");
             showToast("info", "Operator signed out.");
             checkAuth();
         });
@@ -114,7 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
             loadMachines(),
             loadCitizenReports()
         ]);
-        if (allMachines.length > 0) {
+
+        const assignedMachineId = sessionStorage.getItem("wb_operator_machine_id");
+        if (assignedMachineId) {
+            loadAuditLogs(parseInt(assignedMachineId, 10));
+        } else if (allMachines.length > 0) {
             loadAuditLogs(allMachines[0].id);
         }
     }
@@ -135,17 +197,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Load Machines
+    // Load Machines and Select Operator's Assigned Station
     async function loadMachines() {
         try {
             const res = await fetch("/api/machines");
             if (!res.ok) return;
             allMachines = await res.json();
 
+            const assignedMachineId = sessionStorage.getItem("wb_operator_machine_id");
+
             // Populate station controller select
             if (stationSelect) {
                 stationSelect.innerHTML = allMachines.map(m => `
-                    <option value="${m.id}" data-status="${m.status}" data-level="${m.water_level_pct}" data-tds="${m.tds_level}">
+                    <option value="${m.id}" data-status="${m.status}" data-level="${m.water_level_pct}" data-tds="${m.tds_level}" ${String(m.id) === String(assignedMachineId) ? 'selected' : ''}>
                         ${m.village_name} - ${m.machine_name} (${m.status})
                     </option>
                 `).join("");
@@ -156,7 +220,9 @@ document.addEventListener("DOMContentLoaded", () => {
             // Populate maintenance select
             if (maintStationSelect) {
                 maintStationSelect.innerHTML = allMachines.map(m => `
-                    <option value="${m.id}">${m.village_name} - ${m.machine_name}</option>
+                    <option value="${m.id}" ${String(m.id) === String(assignedMachineId) ? 'selected' : ''}>
+                        ${m.village_name} - ${m.machine_name}
+                    </option>
                 `).join("");
             }
 
@@ -205,7 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const st = btn.getAttribute("data-status");
             setStatusChoice(st);
 
-            // Auto adjust slider on status click for operator convenience
             if (st === "AVAILABLE" && parseInt(slider.value, 10) < 50) {
                 slider.value = 85;
                 levelBadge.textContent = "85%";

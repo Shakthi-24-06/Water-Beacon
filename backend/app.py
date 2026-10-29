@@ -58,6 +58,9 @@ def operator_login():
     pin = data.get("pin", "").strip()
     expected_pin = os.environ.get("OPERATOR_PIN", "2026")
 
+    village_id = data.get("village_id")
+    village_name = data.get("village_name", "").strip()
+
     if pin == expected_pin:
         op_name = data.get("operator_name", "").strip() or "Panchayat Operator"
         return jsonify({
@@ -65,6 +68,8 @@ def operator_login():
             "message": "Operator authenticated successfully",
             "operator": {
                 "name": op_name,
+                "village_id": village_id,
+                "village_name": village_name or "Village RO Station",
                 "role": "Authorized Field Operator",
                 "session_token": "wb_operator_session_2026"
             }

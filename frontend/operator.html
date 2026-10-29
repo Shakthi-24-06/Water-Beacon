@@ -27,14 +27,24 @@
             </span>
 
             <h2>Sign in to Field Console</h2>
-            <p>Enter your 4-digit Operator Access PIN to manage village RO water plants and telemetry.</p>
+            <p>Select your assigned village and enter your PIN to manage your RO water station.</p>
 
             <form id="form-operator-login">
+                <!-- Select Village -->
+                <div class="form-group" style="text-align: left;">
+                    <label for="login-op-village">Select Your Village / RO Station</label>
+                    <select id="login-op-village" class="form-control" required>
+                        <option value="" disabled selected>Loading village stations...</option>
+                    </select>
+                </div>
+
+                <!-- Operator Name -->
                 <div class="form-group" style="text-align: left;">
                     <label for="login-op-name">Operator Name</label>
                     <input type="text" id="login-op-name" class="form-control" value="Muthu K (Panchayat Operator)" required>
                 </div>
 
+                <!-- Operator Access PIN -->
                 <div class="form-group" style="text-align: left;">
                     <label for="login-op-pin">Operator Access PIN</label>
                     <input type="password" id="login-op-pin" class="op-pin-input" maxlength="6" placeholder="••••" required autofocus autocomplete="current-password">
@@ -79,7 +89,7 @@
             <div class="operator-topbar-right">
                 <div class="operator-user-info">
                     <strong id="header-operator-name">Operator</strong>
-                    <span>Authorized Field Unit</span>
+                    <span id="header-operator-village">Semmarikulam Station</span>
                 </div>
                 <a href="/" class="btn-ghost-light" title="View citizen site">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;">
