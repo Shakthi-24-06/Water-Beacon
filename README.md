@@ -2,51 +2,49 @@
 
 Water Beacon is a community-first water intelligence platform designed for rural and semi-urban Panchayats (specifically serving districts in Tamil Nadu). It provides real-time drinking water availability, automated tank volume telemetry, water purity (TDS) metrics, citizen issue reporting, and transparent maintenance tracking.
 
-Residents can check their local RO plant status before leaving home, avoiding wasted trips and long queues in extreme weather.
+The platform cleanly separates the **Public Citizen Portal** from the **Panchayat Operator Console**, ensuring unauthorized users cannot alter plant status.
 
 ---
 
 ## 🌟 Key Features
 
+### 👤 Public Citizen Portal (`/`)
 1. **Real-time RO Availability & Telemetry**:
    - Live status display (`WATER AVAILABLE`, `OUT OF WATER`, `UNDER MAINTENANCE`, `UNDER REPAIR`, `TEMPORARILY CLOSED`).
-   - Dynamic animated water tank level gauge with graduated measurement marks.
+   - Dynamic animated water tank level gauge with graduated measurement marks (0%, 25%, 50%, 75%, 100%).
    - Water quality metrics (TDS in PPM) and total plant capacity in liters.
-   - Operating hours and Panchayat operator direct contact phone number.
+   - Operating hours and Panchayat operator direct contact phone number with click-to-call.
 
 2. **Smart Station Search & Autocomplete**:
-   - Instant search bar with live auto-suggest dropdown across villages and districts.
+   - Instant search bar with live debounced auto-suggest dropdown across villages and districts.
    - Real-time animated telemetry counters for Total Stations, System Uptime %, Monitored Capacity (L), and Villages Covered.
 
 3. **Stations Directory & Explorer**:
    - Searchable and filterable grid of all community RO plants across the district.
    - Filter chips: All Stations, Available, Under Maintenance, Out of Water.
-   - Instant "View Live Monitor" station switcher.
+   - 1-Click "View Live Monitor" station switcher.
    - Direct CSV Data Export (`/api/export/status-csv`) with complete station operational data.
 
 4. **Maintenance & Repair Tracking**:
-   - Public service logs detailing active and completed maintenance tickets.
-   - Track sediment & carbon filter replacements, UV lamp servicing, and pump overhauls.
-   - Filter tabs: All, Active / Open, Completed.
-   - "Mark Resolved" one-click action that updates status, closes ticket, and restores the station to Available.
+   - Transparent public service logs showing active and resolved maintenance tickets.
+   - Filter tabs: All Records, Active / Open, Completed.
 
 5. **Citizen Issue Reporting**:
    - Villagers can submit reports directly to the maintenance team for low pressure, strange water taste, dispenser tap leaks, or power failures.
    - Stored in the `community_reports` database table for tracking and resolution.
 
-6. **Panchayat Operator Portal**:
-   - Secure operator dialog allowing designated village operators to broadcast status changes, update water levels %, record TDS readings, and write remarks.
-   - Full audit trail recorded in `machine_status_logs`.
+6. **Bilingual Support (English & தமிழ்)**:
+   - Full English and Tamil language localization with instantaneous switching without full page reloads.
 
-7. **Bilingual Support (English & தமிழ்)**:
-   - Full English and Tamil language localization with instantaneous switching.
-   - Localized village terms, status descriptions, and interface elements.
+---
 
-8. **Clean, Modern, Accessible UI/UX**:
-   - Fresh, bright interface with crisp typography and subtle water-blue and emerald accents.
-   - 100% SVG vector icons (no emojis in UI).
-   - Smooth CSS animations, skeleton loaders, and interactive toast notification system.
-   - Full accessibility support with `@media (prefers-reduced-motion: reduce)`.
+### 🛡️ Dedicated Operator Portal (`/operator`)
+- **Separated & Protected**: Public citizens do not see operator controls or status edit forms on the public site.
+- **PIN Authentication**: Secure login gate (Demonstration PIN: `2026`).
+- **Live Station Status Controller**: Set dispensing status, overhead tank water level % slider, TDS purity readings, and status remarks.
+- **Citizen Report Management**: Review incoming reports and update status (`PENDING`, `INVESTIGATING`, `RESOLVED`).
+- **Preventative Maintenance Scheduler**: Schedule filter changes, UV lamp replacements, and pump motor servicing.
+- **Live Audit Trail**: Full log table tracking all historical status modifications and operator remarks.
 
 ---
 
@@ -72,9 +70,11 @@ water/
 ├── database/
 │   └── schema.sql            # Full MySQL database schema definition
 ├── frontend/
-│   ├── index.html            # Main entry point and dynamic loader
+│   ├── index.html            # Public citizen portal entry point
+│   ├── operator.html         # Dedicated operator & technician portal
 │   ├── css/
 │   │   ├── style.css         # Global design system, variables, modals, toasts
+│   │   ├── operator.css      # Operator dashboard layout and styles
 │   │   └── sections/         # Modular CSS per section
 │   │       ├── navbar.css
 │   │       ├── hero.css
@@ -86,6 +86,7 @@ water/
 │   │       └── footer.css
 │   ├── js/
 │   │   ├── app.js            # App orchestrator, modal handlers, toasts
+│   │   ├── operator.js       # Dedicated operator console logic & auth
 │   │   ├── language.js       # English & Tamil translation dictionary
 │   │   └── sections/         # Section-specific logic
 │   │       ├── navbar.js
@@ -103,6 +104,8 @@ water/
 │       ├── about.html
 │       ├── footer.html
 │       └── modals.html
+├── tests/
+│   └── test_suite.py         # Comprehensive unit & integration tests
 ├── .gitignore
 └── README.md
 ```
@@ -129,10 +132,8 @@ Start the Flask development server:
 python backend/app.py
 ```
 
-Open your browser and navigate to:
-```
-http://127.0.0.1:5000
-```
+- Public Citizen View: `http://127.0.0.1:5000/`
+- Operator Console: `http://127.0.0.1:5000/operator` (PIN: `2026`)
 
 ---
 
@@ -140,6 +141,9 @@ http://127.0.0.1:5000
 
 | Method | Endpoint | Description |
 |---|---|---|
+| `GET` | `/` | Public citizen/villager page |
+| `GET` | `/operator` | Dedicated operator portal page |
+| `POST` | `/api/operator/login` | Operator PIN authentication |
 | `GET` | `/api/villages` | List all villages with machine status & summary |
 | `GET` | `/api/villages/<id>/status` | Detailed live machine telemetry for a specific village |
 | `GET` | `/api/machines` | Filterable list of all RO machines across districts |
@@ -151,6 +155,7 @@ http://127.0.0.1:5000
 | `PATCH` | `/api/maintenance/<id>` | Update maintenance ticket status (mark COMPLETED) |
 | `GET` | `/api/reports` | List community citizen reports |
 | `POST` | `/api/reports` | Submit a citizen water issue report |
+| `PATCH` | `/api/reports/<id>` | Operator updates report status (`INVESTIGATING`, `RESOLVED`) |
 | `GET` | `/api/stats/overview` | Aggregated system metrics for counters & hero |
 | `GET` | `/api/export/status-csv` | Download CSV status report for all stations |
 

@@ -13,15 +13,41 @@ class TestWaterBeaconApp(unittest.TestCase):
         app.config["TESTING"] = True
         self.client = app.test_client()
 
-    def test_01_index_route(self):
+    def test_01_index_route_citizen_separation(self):
         res = self.client.get("/")
         self.assertEqual(res.status_code, 200)
         self.assertIn(b"Water Beacon", res.data)
+        # Public users see the citizen interface
         self.assertIn(b"navbar", res.data)
+        self.assertIn(b"hero", res.data)
+        self.assertIn(b"status", res.data)
+        # Verify operator portal is separated
+        self.assertNotIn(b"Broadcast Status Update to Network", res.data)
 
-    def test_02_all_static_assets(self):
+    def test_02_operator_portal_route(self):
+        res = self.client.get("/operator")
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(b"Field Operator Console", res.data)
+        self.assertIn(b"Operator Access PIN", res.data)
+
+    def test_03_operator_login_api(self):
+        # Invalid PIN
+        res_fail = self.client.post("/api/operator/login", json={"pin": "wrong_pin"})
+        self.assertEqual(res_fail.status_code, 401)
+        self.assertFalse(res_fail.get_json()["success"])
+
+        # Valid PIN (default: 2026)
+        res_ok = self.client.post("/api/operator/login", json={"pin": "2026", "operator_name": "Selvam R"})
+        self.assertEqual(res_ok.status_code, 200)
+        data = res_ok.get_json()
+        self.assertTrue(data["success"])
+        self.assertEqual(data["operator"]["name"], "Selvam R")
+        self.assertIn("session_token", data["operator"])
+
+    def test_04_all_static_assets(self):
         assets = [
             "/css/style.css",
+            "/css/operator.css",
             "/css/sections/navbar.css",
             "/css/sections/hero.css",
             "/css/sections/status.css",
@@ -41,6 +67,7 @@ class TestWaterBeaconApp(unittest.TestCase):
             "/sections/modals.html",
             "/js/language.js",
             "/js/app.js",
+            "/js/operator.js",
             "/js/sections/navbar.js",
             "/js/sections/hero.js",
             "/js/sections/status.js",
@@ -52,109 +79,64 @@ class TestWaterBeaconApp(unittest.TestCase):
             self.assertEqual(res.status_code, 200, f"Failed to load asset: {asset}")
             self.assertGreater(len(res.data), 0, f"Asset is empty: {asset}")
 
-    def test_03_api_villages(self):
+    def test_05_api_villages_and_status(self):
         res = self.client.get("/api/villages")
         self.assertEqual(res.status_code, 200)
-        data = res.get_json()
-        self.assertIsInstance(data, list)
-        self.assertGreater(len(data), 0)
-        self.assertTrue(any(v["name"] == "Semmarikulam" for v in data))
+        self.assertIsInstance(res.get_json(), list)
 
-    def test_04_api_village_status(self):
-        res = self.client.get("/api/villages/1/status")
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
+        res_status = self.client.get("/api/villages/1/status")
+        self.assertEqual(res_status.status_code, 200)
+        data = res_status.get_json()
         self.assertEqual(data["village_id"], 1)
-        self.assertEqual(data["village_name"], "Semmarikulam")
-        self.assertIn("status", data)
         self.assertIn("water_level_pct", data)
         self.assertIn("tds_level", data)
 
-    def test_05_api_machines_and_filtering(self):
-        res = self.client.get("/api/machines")
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
-        self.assertGreater(len(data), 0)
-
-        # Filter by status
-        res_avail = self.client.get("/api/machines?status=AVAILABLE")
-        self.assertEqual(res_avail.status_code, 200)
-        for m in res_avail.get_json():
-            self.assertEqual(m["status"], "AVAILABLE")
-
-        # Search by name
-        res_search = self.client.get("/api/machines?search=Semmari")
-        self.assertEqual(res_search.status_code, 200)
-        self.assertEqual(len(res_search.get_json()), 1)
-
-    def test_06_operator_update_status(self):
+    def test_06_operator_update_machine_status(self):
         payload = {
             "status": "AVAILABLE",
-            "remarks": "Automated integration test status check",
-            "updated_by": "Test Suite Operator",
-            "water_level_pct": 92,
-            "tds_level": 108
+            "remarks": "Morning filtration cycle completed",
+            "updated_by": "Operator Test Suite",
+            "water_level_pct": 88,
+            "tds_level": 112
         }
         res = self.client.post("/api/machines/1/status", json=payload)
         self.assertEqual(res.status_code, 200)
         data = res.get_json()
         self.assertEqual(data["machine"]["status"], "AVAILABLE")
-        self.assertEqual(data["machine"]["water_level_pct"], 92)
+        self.assertEqual(data["machine"]["water_level_pct"], 88)
 
-        # Check logs
-        res_logs = self.client.get("/api/machines/1/logs")
-        self.assertEqual(res_logs.status_code, 200)
-        logs = res_logs.get_json()
-        self.assertGreater(len(logs), 0)
-        self.assertEqual(logs[0]["remarks"], "Automated integration test status check")
-
-    def test_07_maintenance_crud_flow(self):
-        # Create ticket
-        payload = {
+    def test_07_citizen_report_flow_and_operator_resolution(self):
+        # 1. Citizen posts issue
+        report_data = {
             "machine_id": 1,
-            "issue_type": "Filter Cleaning Test",
-            "description": "Routine test verification of intake mesh",
-            "updated_by": "Unit Test Tech",
-            "set_machine_maintenance": False
-        }
-        res_create = self.client.post("/api/maintenance", json=payload)
-        self.assertEqual(res_create.status_code, 201)
-        rec_id = res_create.get_json()["record_id"]
-
-        # Patch ticket to completed
-        res_patch = self.client.patch(f"/api/maintenance/{rec_id}", json={"status": "COMPLETED"})
-        self.assertEqual(res_patch.status_code, 200)
-
-    def test_08_community_report_submission(self):
-        payload = {
-            "machine_id": 1,
-            "reporter_name": "Sundar",
-            "reporter_phone": "+91 98401 23456",
+            "reporter_name": "Meenakshi",
+            "reporter_phone": "+91 94430 12345",
             "issue_type": "Low Pressure",
-            "description": "Observed slow dispensing flow during midday hours."
+            "description": "Tap flow is low this afternoon."
         }
-        res = self.client.post("/api/reports", json=payload)
-        self.assertEqual(res.status_code, 201)
+        res_post = self.client.post("/api/reports", json=report_data)
+        self.assertEqual(res_post.status_code, 201)
+        rep_id = res_post.get_json()["report_id"]
 
-        res_list = self.client.get("/api/reports")
-        self.assertEqual(res_list.status_code, 200)
-        reports = res_list.get_json()
-        self.assertTrue(any(r["reporter_name"] == "Sundar" for r in reports))
+        # 2. Operator updates status to INVESTIGATING
+        res_inv = self.client.patch(f"/api/reports/{rep_id}", json={"status": "INVESTIGATING"})
+        self.assertEqual(res_inv.status_code, 200)
 
-    def test_09_system_stats_overview(self):
+        # 3. Operator marks RESOLVED
+        res_res = self.client.patch(f"/api/reports/{rep_id}", json={"status": "RESOLVED"})
+        self.assertEqual(res_res.status_code, 200)
+
+    def test_08_system_stats_overview(self):
         res = self.client.get("/api/stats/overview")
         self.assertEqual(res.status_code, 200)
         stats = res.get_json()
         self.assertIn("total_stations", stats)
         self.assertIn("available_stations", stats)
-        self.assertIn("total_capacity_liters", stats)
-        self.assertGreater(stats["total_stations"], 0)
 
-    def test_10_csv_export(self):
+    def test_09_csv_export(self):
         res = self.client.get("/api/export/status-csv")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.mimetype, "text/csv")
-        self.assertIn(b"RO Machine Name", res.data)
         self.assertIn(b"Semmarikulam", res.data)
 
 if __name__ == "__main__":

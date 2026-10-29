@@ -34,9 +34,46 @@ def add_security_and_cors_headers(response):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response
 
+# -------------------------------------------------------------
+# Web Page Routes
+# -------------------------------------------------------------
+
 @app.route("/")
 def home():
+    """Public citizen/villager page"""
     return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/operator")
+def operator_portal():
+    """Dedicated Operator & Administrative Portal"""
+    return send_from_directory(FRONTEND_DIR, "operator.html")
+
+# -------------------------------------------------------------
+# Operator Authentication API
+# -------------------------------------------------------------
+
+@app.route("/api/operator/login", methods=["POST"])
+def operator_login():
+    data = request.get_json(silent=True) or {}
+    pin = data.get("pin", "").strip()
+    expected_pin = os.environ.get("OPERATOR_PIN", "2026")
+
+    if pin == expected_pin:
+        op_name = data.get("operator_name", "").strip() or "Panchayat Operator"
+        return jsonify({
+            "success": True,
+            "message": "Operator authenticated successfully",
+            "operator": {
+                "name": op_name,
+                "role": "Authorized Field Operator",
+                "session_token": "wb_operator_session_2026"
+            }
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "error": "Invalid Operator PIN. Please contact Panchayat administration."
+        }), 401
 
 # -------------------------------------------------------------
 # Villages API
@@ -80,7 +117,6 @@ def get_villages():
         cursor.execute(query, tuple(params))
         villages = cursor.fetchall()
 
-        # Format dates
         for item in villages:
             if item.get("last_updated"):
                 item["last_updated"] = item["last_updated"].isoformat()
@@ -286,13 +322,11 @@ def update_machine_status(machine_id):
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
-        # Check machine exists
         cursor.execute("SELECT id, status, water_level_pct FROM ro_machines WHERE id = %s", (machine_id,))
         machine = cursor.fetchone()
         if not machine:
             return jsonify({"error": "Machine not found"}), 404
 
-        # Compute sensible default water level if not explicitly provided
         if water_level is None:
             if new_status == "AVAILABLE":
                 water_level = 90
@@ -308,7 +342,6 @@ def update_machine_status(machine_id):
             except (ValueError, TypeError):
                 water_level = 50
 
-        # Update machine record
         if tds is not None:
             try:
                 tds = max(10, min(1000, int(tds)))
@@ -326,7 +359,6 @@ def update_machine_status(machine_id):
                 WHERE id = %s
             """, (new_status, water_level, machine_id))
 
-        # Log change in machine_status_logs
         cursor.execute("""
             INSERT INTO machine_status_logs (machine_id, status, remarks, updated_by)
             VALUES (%s, %s, %s, %s)
@@ -334,7 +366,6 @@ def update_machine_status(machine_id):
 
         connection.commit()
 
-        # Fetch updated machine
         cursor.execute("""
             SELECT
                 r.id,
@@ -560,11 +591,9 @@ def update_maintenance_record(record_id):
         """, (new_status, record_id))
 
         if new_status == "COMPLETED":
-            # Find machine
             cursor.execute("SELECT machine_id FROM maintenance_records WHERE id = %s", (record_id,))
             rec = cursor.fetchone()
             if rec:
-                # Restore machine to AVAILABLE
                 cursor.execute("""
                     UPDATE ro_machines
                     SET status = 'AVAILABLE', water_level_pct = 95
@@ -592,7 +621,7 @@ def update_maintenance_record(record_id):
             connection.close()
 
 # -------------------------------------------------------------
-# Community Reports API
+# Community Citizen Reports API
 # -------------------------------------------------------------
 
 @app.route("/api/reports", methods=["GET", "POST"])
@@ -673,6 +702,36 @@ def handle_reports():
         return jsonify(reports)
 
     except Exception as error:
+        return jsonify({"error": str(error)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+@app.route("/api/reports/<int:report_id>", methods=["PATCH"])
+def update_report_status(report_id):
+    connection = None
+    cursor = None
+    data = request.get_json(silent=True) or {}
+    new_status = data.get("status", "").strip().upper()
+
+    if new_status not in ["PENDING", "INVESTIGATING", "RESOLVED"]:
+        return jsonify({"error": "Invalid status. Must be PENDING, INVESTIGATING, or RESOLVED"}), 400
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("UPDATE community_reports SET status = %s WHERE id = %s", (new_status, report_id))
+        connection.commit()
+
+        return jsonify({"message": f"Report #{report_id} status updated to {new_status}"}), 200
+
+    except Exception as error:
+        if connection:
+            connection.rollback()
         return jsonify({"error": str(error)}), 500
 
     finally:
