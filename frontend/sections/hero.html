@@ -1,0 +1,195 @@
+<section class="hero" id="home">
+    <div class="hero-background">
+        <div class="hero-glow hero-glow-one"></div>
+        <div class="hero-glow hero-glow-two"></div>
+        <div class="hero-grid"></div>
+    </div>
+
+    <div class="hero-container container">
+
+        <!-- Hero Left Content -->
+        <div class="hero-content reveal">
+
+            <div class="section-tag hero-eyebrow">
+                <span class="section-tag-dot"></span>
+                <span data-i18n="liveMonitoring">LIVE RO WATER MONITORING</span>
+            </div>
+
+            <h1 class="hero-headline">
+                <span data-i18n="knowBefore">Know Before,</span>
+                <span class="hero-highlight" data-i18n="youGo">You Go...</span>
+            </h1>
+
+            <p class="hero-description" data-i18n="heroDescription">
+                Check real-time RO drinking water availability in your village before leaving home.
+                Reliable, community-driven, and updated live by local operators.
+            </p>
+
+            <!-- Search Bar with Autocomplete Suggestions -->
+            <div class="hero-search-wrapper">
+                <div class="hero-search">
+                    <div class="search-input-box">
+                        <svg viewBox="0 0 24 24" fill="none" class="search-icon">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 20L16.2 16.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+
+                        <input
+                            id="village-search"
+                            type="text"
+                            data-i18n-placeholder="villagePlaceholder"
+                            placeholder="Enter your village name (e.g. Semmarikulam, Udangudi...)"
+                            autocomplete="off"
+                        >
+
+                        <button id="clear-search-btn" class="clear-search-btn" type="button" aria-label="Clear search" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6L18 18"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <button id="search-button" class="btn btn-primary search-submit-btn" type="button">
+                        <span data-i18n="checkAvailability">Check availability</span>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Instant Autocomplete Dropdown List -->
+                <div id="search-suggestions" class="search-suggestions" style="display: none;"></div>
+            </div>
+
+            <!-- Animated Real-time Telemetry Stats -->
+            <div class="hero-stats-row">
+                <div class="stat-item">
+                    <strong class="stat-number" id="hero-stat-stations">0</strong>
+                    <span class="stat-label" data-i18n="totalStations">RO Stations</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <strong class="stat-number" id="hero-stat-uptime">0%</strong>
+                    <span class="stat-label" data-i18n="uptimeRate">System Uptime</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <strong class="stat-number" id="hero-stat-capacity">0L</strong>
+                    <span class="stat-label" data-i18n="capacityLitres">Liters Capacity</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <strong class="stat-number" id="hero-stat-villages">0</strong>
+                    <span class="stat-label" data-i18n="villagesCovered">Villages</span>
+                </div>
+            </div>
+
+            <!-- Trust / Community Badge -->
+            <div class="hero-trust">
+                <div class="trust-avatars">
+                    <span class="avatar-badge">TN</span>
+                    <span class="avatar-badge">RO</span>
+                    <span class="avatar-badge">+</span>
+                </div>
+                <div>
+                    <strong data-i18n="villageFocused">Village-focused</strong>
+                    <p data-i18n="builtForCommunities">Built for local communities in Tamil Nadu</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Hero Right Dashboard Preview Card -->
+        <div class="hero-dashboard reveal">
+
+            <div class="dashboard-card modern-card">
+
+                <div class="dashboard-top">
+                    <div>
+                        <span class="dashboard-label" data-i18n="currentStatus">CURRENT STATUS</span>
+                        <h3 id="hero-village-name">Semmarikulam</h3>
+                        <p id="hero-location-name">Thoothukudi, Tamil Nadu</p>
+                    </div>
+
+                    <div class="status-badge available" id="hero-status-pill">
+                        <span class="indicator"></span>
+                        <strong id="hero-status-text">WATER AVAILABLE</strong>
+                    </div>
+                </div>
+
+                <!-- Animated Water Gauge Graphic -->
+                <div class="water-visual">
+                    <div class="water-ring water-ring-one"></div>
+                    <div class="water-ring water-ring-two"></div>
+
+                    <div class="water-icon" id="hero-water-icon">
+                        <svg viewBox="0 0 80 80" fill="none">
+                            <path
+                                d="M40 9C40 9 20 30.5 20 46C20 57.046 28.954 66 40 66C51.046 66 60 57.046 60 46C60 30.5 40 9 40 9Z"
+                                fill="currentColor"
+                            />
+                            <path
+                                d="M29 48C30.5 54 34.2 57 40 58"
+                                stroke="white"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </div>
+
+                    <div class="hero-water-level">
+                        <strong id="hero-water-level">85%</strong>
+                        <span data-i18n="waterLevel">water level</span>
+                    </div>
+                </div>
+
+                <!-- Live Metrics Badge Strip (TDS & Capacity) -->
+                <div class="hero-metrics-strip">
+                    <div class="metric-pill">
+                        <span class="metric-pill-label">TDS PURITY</span>
+                        <strong id="hero-tds-val">110 PPM</strong>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="metric-pill-label">TANK CAPACITY</span>
+                        <strong id="hero-capacity-val">5,000 L</strong>
+                    </div>
+                </div>
+
+                <!-- Machine Info -->
+                <div class="machine-info">
+                    <div>
+                        <span class="machine-sublabel" data-i18n="roMachine">RO MACHINE</span>
+                        <strong id="hero-machine-name">Main RO Water Machine</strong>
+                    </div>
+
+                    <div class="machine-location">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M12 21C16 17 19 14 19 10C19 6.134 15.866 3 12 3C8.134 3 5 6.134 5 10C5 14 8 17 12 21Z"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            />
+                            <circle
+                                cx="12"
+                                cy="10"
+                                r="2.5"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            />
+                        </svg>
+                        <span id="hero-machine-location">Village Main Road</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-footer">
+                    <span data-i18n="lastUpdated">Last updated</span>
+                    <strong id="hero-last-updated">Checking...</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>

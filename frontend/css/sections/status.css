@@ -1,0 +1,478 @@
+/* ==========================================================================
+   WATER STATUS COMPONENT
+   ========================================================================== */
+
+.water-status-page {
+    position: relative;
+    padding: 100px 0;
+    background:
+        radial-gradient(circle at 50% 10%, rgba(8, 127, 140, 0.06), transparent 45%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.water-status-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 40px;
+}
+
+/* Quick Village Selector Dropdown */
+.station-selector-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 8px 18px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.station-selector-box label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-teal);
+    white-space: nowrap;
+}
+
+.station-selector-box label svg {
+    width: 16px;
+    height: 16px;
+}
+
+.station-select-dropdown {
+    border: none;
+    background: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    outline: none;
+}
+
+.station-select-dropdown:focus {
+    box-shadow: 0 0 0 2px var(--accent-teal);
+}
+
+/* Central Station Card */
+.water-station {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px;
+    position: relative;
+    background: #ffffff;
+}
+
+.station-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.station-eyebrow {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.station-info h3 {
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -1px;
+}
+
+.station-info p {
+    font-size: 14px;
+    color: var(--accent-teal);
+    font-weight: 600;
+}
+
+/* Tank Area */
+.tank-area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0 40px;
+}
+
+.ambient-drop {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    color: rgba(2, 132, 199, 0.4);
+    animation: floatParticle 4s infinite ease-in-out;
+}
+
+.drop-one { top: 10%; left: 22%; animation-delay: 0s; }
+.drop-two { top: 35%; right: 20%; animation-delay: 1.4s; }
+.drop-three { bottom: 15%; left: 26%; animation-delay: 2.5s; }
+
+@keyframes floatParticle {
+    0%, 100% { transform: translateY(0); opacity: 0.3; }
+    50% { transform: translateY(-12px); opacity: 0.8; }
+}
+
+.tank-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.tank-scale {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 220px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    user-select: none;
+    text-align: right;
+}
+
+.tank {
+    position: relative;
+    width: 160px;
+    height: 230px;
+    border-radius: 80px 80px 24px 24px;
+    border: 4px solid #cbd5e1;
+    background: #f8fafc;
+    overflow: hidden;
+    box-shadow: inset 0 8px 24px rgba(15, 23, 42, 0.06), 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.tank-water {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, #38bdf8 0%, #0284c7 60%, #0369a1 100%);
+    transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tank-water.out-of-water {
+    background: linear-gradient(180deg, #f87171 0%, #ef4444 100%) !important;
+}
+
+.tank-water.maintenance {
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%) !important;
+}
+
+.tank-water.repair {
+    background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%) !important;
+}
+
+.tank-water.closed {
+    background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%) !important;
+}
+
+.water-wave {
+    position: absolute;
+    top: -12px;
+    left: -50%;
+    width: 200%;
+    height: 24px;
+    background: radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.35) 0%, transparent 60%);
+    border-radius: 40%;
+    animation: waveDrift 6s linear infinite;
+}
+
+.wave-two {
+    top: -8px;
+    opacity: 0.5;
+    animation: waveDrift 4s linear infinite reverse;
+}
+
+@keyframes waveDrift {
+    from { transform: translateX(0); }
+    to { transform: translateX(50%); }
+}
+
+.tank-bubbles .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    animation: bubbleRise 3s infinite ease-in;
+}
+
+.bubble.b1 { width: 6px; height: 6px; left: 30%; bottom: 10px; animation-duration: 2.8s; }
+.bubble.b2 { width: 9px; height: 9px; left: 60%; bottom: 15px; animation-duration: 3.5s; animation-delay: 1s; }
+.bubble.b3 { width: 5px; height: 5px; left: 45%; bottom: 5px; animation-duration: 2.2s; animation-delay: 1.8s; }
+
+@keyframes bubbleRise {
+    0% { transform: translateY(0); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: translateY(-160px); opacity: 0; }
+}
+
+.water-level-badge {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    padding: 6px 18px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    border: 1px solid var(--border-light);
+}
+
+.water-level-badge strong {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.water-level-badge span {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Status Result Banner */
+.status-result {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 24px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 30px;
+    transition: var(--transition-base);
+}
+
+.status-result.available {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+}
+.status-result.available .status-icon {
+    background: #10b981;
+    color: #ffffff;
+}
+.status-result.available .status-title {
+    color: #065f46;
+}
+.status-result.available p {
+    color: #047857;
+}
+
+.status-result.out-of-water {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+.status-result.out-of-water .status-icon {
+    background: #ef4444;
+    color: #ffffff;
+}
+.status-result.out-of-water .status-title {
+    color: #991b1b;
+}
+.status-result.out-of-water p {
+    color: #b91c1c;
+}
+
+.status-result.maintenance {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+.status-result.maintenance .status-icon {
+    background: #f59e0b;
+    color: #ffffff;
+}
+.status-result.maintenance .status-title {
+    color: #92400e;
+}
+.status-result.maintenance p {
+    color: #b45309;
+}
+
+.status-result.repair {
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+}
+.status-result.repair .status-icon {
+    background: #8b5cf6;
+    color: #ffffff;
+}
+.status-result.repair .status-title {
+    color: #5b21b6;
+}
+.status-result.repair p {
+    color: #6d28d9;
+}
+
+.status-result.closed {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+}
+.status-result.closed .status-icon {
+    background: #64748b;
+    color: #ffffff;
+}
+.status-result.closed .status-title {
+    color: #1e293b;
+}
+.status-result.closed p {
+    color: #475569;
+}
+
+.status-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+}
+
+.status-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.status-text-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-title {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.status-text-content p {
+    font-size: 13.5px;
+    line-height: 1.4;
+}
+
+/* Telemetry Grid */
+.station-details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.telemetry-card {
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: var(--transition-fast);
+}
+
+.telemetry-card:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.telemetry-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    background: #e0f2fe;
+    color: #0284c7;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.telemetry-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.tel-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.tel-val {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.tel-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.tel-link {
+    display: inline-block;
+    font-size: 11.5px;
+    color: var(--accent-teal);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.tel-link:hover {
+    text-decoration: underline;
+}
+
+/* Actions Bar */
+.station-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+    flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .station-details-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .water-station {
+        padding: 24px 16px;
+    }
+    .station-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .station-actions-bar {
+        justify-content: stretch;
+    }
+    .station-actions-bar button {
+        width: 100%;
+    }
+    .station-selector-box {
+        flex-direction: column;
+        border-radius: var(--radius-md);
+        width: 100%;
+    }
+    .station-select-dropdown {
+        width: 100%;
+    }
+}
