@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 54" fill="none">
+    <defs>
+        <linearGradient id="wbDropGradFull" x1="27" y1="8" x2="27" y2="46" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="50%" stop-color="#0284c7"/>
+            <stop offset="100%" stop-color="#0369a1"/>
+        </linearGradient>
+
+        <linearGradient id="wbWaveGradFull" x1="12" y1="10" x2="42" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#10b981"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Icon Group -->
+    <g transform="translate(4, 3)">
+        <!-- Waves -->
+        <path d="M14 16 C17 11 31 11 34 16" stroke="url(#wbWaveGradFull)" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
+        <path d="M9 12 C15 5 33 5 39 12" stroke="url(#wbWaveGradFull)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+        <!-- Drop -->
+        <path d="M24 6 C24 6 11 21 11 31 C11 38.18 16.82 44 24 44 C31.18 44 37 38.18 37 31 C37 21 24 6 24 6 Z" fill="url(#wbDropGradFull)"/>
+
+        <!-- Tower -->
+        <path d="M19.5 39 L21.5 25 L26.5 25 L28.5 39 Z" fill="#ffffff" opacity="0.95"/>
+        <rect x="21" y="21" width="6" height="4" rx="1" fill="#ffffff"/>
+        <path d="M21.5 21 C21.5 18.8 26.5 18.8 26.5 21 Z" fill="#ffffff"/>
+        <line x1="24" y1="18.8" x2="24" y2="17" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- Light Beams -->
+        <path d="M24 23 L37 16 L37 22 Z" fill="#ffffff" opacity="0.38"/>
+        <path d="M24 23 L11 16 L11 22 Z" fill="#ffffff" opacity="0.38"/>
+
+        <!-- Lens -->
+        <circle cx="24" cy="23" r="2.2" fill="#0284c7"/>
+        <circle cx="24" cy="23" r="1.2" fill="#38bdf8"/>
+
+        <!-- Droplet Rim -->
+        <path d="M15 28 C15.5 33 18.5 37 22 39" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    </g>
+
+    <!-- Typography -->
+    <text x="60" y="32" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="24" fill="#0f172a" letter-spacing="-0.5">Water<tspan fill="#087f8c" font-weight="600">Beacon</tspan></text>
+    <text x="61" y="45" font-family="'Inter', -apple-system, sans-serif" font-weight="600" font-size="9" fill="#64748b" letter-spacing="1.2">SMART RO TELEMETRY</text>
+</svg>

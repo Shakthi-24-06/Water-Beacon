@@ -73,6 +73,9 @@ class TestWaterBeaconApp(unittest.TestCase):
             "/js/sections/status.js",
             "/js/sections/stations.js",
             "/js/sections/maintenance.js",
+            "/assets/logo.svg",
+            "/assets/logo-full.svg",
+            "/favicon.svg",
         ]
         for asset in assets:
             res = self.client.get(asset)

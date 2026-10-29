@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+    <defs>
+        <linearGradient id="wbDropGrad" x1="24" y1="6" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="50%" stop-color="#0284c7"/>
+            <stop offset="100%" stop-color="#0369a1"/>
+        </linearGradient>
+
+        <linearGradient id="wbBeamGrad" x1="16" y1="20" x2="32" y2="38" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#e0f2fe"/>
+        </linearGradient>
+
+        <linearGradient id="wbWaveGrad" x1="8" y1="8" x2="40" y2="20" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#10b981"/>
+        </linearGradient>
+
+        <filter id="wbGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+    </defs>
+
+    <!-- Concentric Beacon Radio Transmission Waves (Top) -->
+    <path d="M14 16 C17 11 31 11 34 16" stroke="url(#wbWaveGrad)" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
+    <path d="M9 12 C15 5 33 5 39 12" stroke="url(#wbWaveGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+    <!-- Water Droplet Body -->
+    <path d="M24 6 C24 6 11 21 11 31 C11 38.18 16.82 44 24 44 C31.18 44 37 38.18 37 31 C37 21 24 6 24 6 Z" fill="url(#wbDropGrad)"/>
+
+    <!-- Beacon Tower Base -->
+    <path d="M19.5 39 L21.5 25 L26.5 25 L28.5 39 Z" fill="url(#wbBeamGrad)" opacity="0.95"/>
+    <path d="M18.5 39 L29.5 39" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+
+    <!-- Beacon Lantern Room with Glow -->
+    <rect x="21" y="21" width="6" height="4" rx="1" fill="#ffffff" filter="url(#wbGlow)"/>
+    
+    <!-- Beacon Dome & Spire -->
+    <path d="M21.5 21 C21.5 18.8 26.5 18.8 26.5 21 Z" fill="#ffffff"/>
+    <line x1="24" y1="18.8" x2="24" y2="17" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Beacon Light Beam Sweeps -->
+    <path d="M24 23 L37 16 L37 22 Z" fill="#ffffff" opacity="0.38"/>
+    <path d="M24 23 L11 16 L11 22 Z" fill="#ffffff" opacity="0.38"/>
+
+    <!-- Lens Center Core -->
+    <circle cx="24" cy="23" r="2.2" fill="#0284c7"/>
+    <circle cx="24" cy="23" r="1.2" fill="#38bdf8"/>
+
+    <!-- Specular Highlight Curve on Droplet Edge -->
+    <path d="M15 28 C15.5 33 18.5 37 22 39" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+</svg>
