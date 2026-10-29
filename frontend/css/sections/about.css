@@ -131,12 +131,18 @@
 .about-feature-card {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
-    padding: 22px 24px;
+    gap: 18px;
+    padding: 20px 22px;
     background: #f8fafc;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
     transition: var(--transition-fast);
+    min-width: 0;
+}
+
+.about-feature-card > div:last-child {
+    min-width: 0;
+    flex: 1;
 }
 
 .about-feature-card:hover {
@@ -173,9 +179,9 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 960px) {
     .about-content {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 36px;
     }
 }

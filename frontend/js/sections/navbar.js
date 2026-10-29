@@ -40,7 +40,8 @@ function initNavbar() {
 
     // Mobile Navigation Drawer
     if (mobileMenuBtn && navLinks) {
-        mobileMenuBtn.addEventListener("click", () => {
+        mobileMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
             navLinks.classList.toggle("mobile-open");
         });
 
@@ -48,6 +49,18 @@ function initNavbar() {
             link.addEventListener("click", () => {
                 navLinks.classList.remove("mobile-open");
             });
+        });
+
+        document.addEventListener("click", (e) => {
+            if (navLinks.classList.contains("mobile-open") && !mobileMenuBtn.contains(e.target) && !navLinks.contains(e.target)) {
+                navLinks.classList.remove("mobile-open");
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && navLinks.classList.contains("mobile-open")) {
+                navLinks.classList.remove("mobile-open");
+            }
         });
     }
 

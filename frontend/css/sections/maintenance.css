@@ -80,13 +80,20 @@
 .table-responsive {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .maintenance-table {
     width: 100%;
+    min-width: 680px;
     border-collapse: collapse;
     text-align: left;
     font-size: 13.5px;
+}
+
+html[lang="ta"] .maintenance-table th {
+    letter-spacing: 0 !important;
+    font-size: 11.5px;
 }
 
 .maintenance-table th {

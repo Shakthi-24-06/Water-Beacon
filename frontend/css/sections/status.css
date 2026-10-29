@@ -27,6 +27,8 @@
     border: 1px solid var(--border-light);
     border-radius: var(--radius-pill);
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    max-width: 100%;
+    flex-wrap: wrap;
 }
 
 .station-selector-box label {
@@ -245,11 +247,31 @@
 .status-result {
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 20px 24px;
+    gap: 16px;
+    padding: 18px 22px;
     border-radius: var(--radius-lg);
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     transition: var(--transition-base);
+}
+
+.status-icon {
+    flex-shrink: 0;
+}
+
+.status-text-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+html[lang="ta"] .status-title {
+    letter-spacing: 0 !important;
+    font-size: 14.5px;
+}
+
+html[lang="ta"] .status-text-content p {
+    line-height: 1.55;
 }
 
 .status-result.available {
@@ -363,19 +385,33 @@
 .station-details-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 30px;
+    gap: 14px;
+    margin-bottom: 28px;
 }
 
 .telemetry-card {
     background: #f8fafc;
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 14px;
     display: flex;
     align-items: flex-start;
     gap: 12px;
     transition: var(--transition-fast);
+    min-width: 0;
+    overflow: hidden;
+}
+
+.telemetry-card > div:last-child {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+html[lang="ta"] .tel-label {
+    letter-spacing: 0 !important;
+    text-transform: none;
+    font-size: 10.5px;
 }
 
 .telemetry-card:hover {
@@ -448,13 +484,14 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 960px) {
     .station-details-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
     .water-station {
         padding: 24px 16px;
     }
@@ -462,14 +499,18 @@
         grid-template-columns: 1fr;
     }
     .station-actions-bar {
-        justify-content: stretch;
+        flex-direction: column;
+        align-items: stretch;
     }
     .station-actions-bar button {
         width: 100%;
+        justify-content: center;
     }
     .station-selector-box {
         flex-direction: column;
+        align-items: stretch;
         border-radius: var(--radius-md);
+        padding: 14px;
         width: 100%;
     }
     .station-select-dropdown {

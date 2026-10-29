@@ -1,5 +1,5 @@
 /* ==========================================================================
-   NAVBAR COMPONENT
+   NAVBAR COMPONENT - RESPONSIVE & BILINGUAL ALIGNED
    ========================================================================== */
 
 .navbar {
@@ -49,13 +49,15 @@
 .brand-icon {
     width: 40px;
     height: 40px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--accent-teal);
     background: linear-gradient(135deg, #e6f7f8 0%, #d8f3f6 100%);
     border: 1px solid #c9ecf0;
     border-radius: var(--radius-md);
     transition: transform var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .brand:hover .brand-icon {
@@ -69,11 +71,12 @@
 
 .brand-text {
     display: flex;
-    align-items: baseline;
-    gap: 4px;
+    align-items: center; /* Vertically centered with brand-icon */
+    gap: 5px;
     font-size: 19px;
     letter-spacing: -0.5px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 .brand-text strong {
@@ -91,18 +94,23 @@
     align-items: center;
     gap: 6px;
     margin-left: auto;
-    margin-right: 20px;
+    margin-right: 18px;
+    flex-shrink: 1;
 }
 
 .nav-links a {
     position: relative;
-    padding: 8px 14px;
+    padding: 8px 12px;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 13.5px;
     font-weight: 600;
     border-radius: var(--radius-sm);
     transition: var(--transition-fast);
+    white-space: nowrap; /* Prevents awkward multi-line text wrapping */
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
 }
 
 .nav-links a:hover {
@@ -116,35 +124,23 @@
     font-weight: 700;
 }
 
+/* Tamil-specific desktop nav adjustments for balanced spacing */
+html[lang="ta"] .nav-links {
+    gap: 4px;
+    margin-right: 12px;
+}
+
+html[lang="ta"] .nav-links a {
+    padding: 6px 9px;
+    font-size: 12.5px;
+    letter-spacing: 0 !important;
+}
+
 .nav-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-}
-
-/* Operator Quick Button */
-.nav-operator-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 7px 14px;
-    background: linear-gradient(135deg, #087f8c 0%, #0284c7 100%);
-    color: #ffffff;
-    font-size: 12.5px;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    box-shadow: 0 2px 8px rgba(8, 127, 140, 0.25);
-    transition: var(--transition-fast);
-}
-
-.nav-operator-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(8, 127, 140, 0.35);
-}
-
-.nav-operator-btn svg {
-    width: 15px;
-    height: 15px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 /* Language Dropdown */
@@ -153,17 +149,20 @@
 }
 
 .language-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 12px;
+    padding: 6px 12px;
     background: #f8fafc;
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 12.5px;
     font-weight: 600;
+    height: 38px;
+    box-sizing: border-box;
     transition: var(--transition-fast);
+    white-space: nowrap;
 }
 
 .language-btn:hover {
@@ -175,6 +174,7 @@
     width: 15px;
     height: 15px;
     color: var(--accent-teal);
+    flex-shrink: 0;
 }
 
 .language-btn .arrow-icon {
@@ -182,6 +182,7 @@
     height: 14px;
     color: var(--text-muted);
     transition: transform var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .language-menu {
@@ -225,6 +226,8 @@
     font-size: 13px;
     color: var(--text-primary);
     transition: var(--transition-fast);
+    width: 100%;
+    text-align: left;
 }
 
 .lang-option:hover {
@@ -252,17 +255,81 @@
     gap: 5px;
     border-radius: var(--radius-sm);
     color: var(--text-primary);
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.mobile-menu-btn:hover {
+    background: #f1f5f9;
 }
 
 .mobile-menu-btn span {
-    width: 20px;
+    width: 18px;
     height: 2px;
     background: currentColor;
     border-radius: 2px;
     transition: var(--transition-fast);
 }
 
-/* Mobile Responsive */
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS & CLEAN MOBILE DRAWER
+   ========================================================================== */
+
+@media (max-width: 1140px) {
+    .nav-container {
+        padding: 0 14px;
+    }
+    .nav-links a {
+        padding: 7px 9px;
+        font-size: 13px;
+    }
+    html[lang="ta"] .nav-links a {
+        padding: 6px 7px;
+        font-size: 12px;
+    }
+}
+
+/* Tamil Mobile Drawer trigger at 1040px to prevent link squeezing */
+@media (max-width: 1040px) {
+    html[lang="ta"] .nav-links {
+        position: fixed;
+        top: 86px;
+        left: 16px;
+        right: 16px;
+        background: #ffffff;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.15);
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 8px;
+        margin: 0;
+        display: none;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+        z-index: 1001;
+    }
+
+    html[lang="ta"] .nav-links.mobile-open {
+        display: flex;
+        animation: fadeInMenu 0.2s ease-out;
+    }
+
+    html[lang="ta"] .nav-links a {
+        padding: 12px 16px;
+        font-size: 14.5px;
+        border-radius: var(--radius-md);
+    }
+
+    html[lang="ta"] .mobile-menu-btn {
+        display: flex;
+    }
+}
+
+/* Standard Mobile Drawer at 992px */
 @media (max-width: 992px) {
     .nav-links {
         position: fixed;
@@ -276,9 +343,12 @@
         flex-direction: column;
         align-items: stretch;
         padding: 16px;
-        gap: 6px;
+        gap: 8px;
         margin: 0;
         display: none;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+        z-index: 1001;
     }
 
     .nav-links.mobile-open {
@@ -286,16 +356,41 @@
         animation: fadeInMenu 0.2s ease-out;
     }
 
+    .nav-links a {
+        padding: 12px 16px;
+        font-size: 14.5px;
+        border-radius: var(--radius-md);
+    }
+
     .mobile-menu-btn {
         display: flex;
     }
 }
 
-@media (max-width: 540px) {
-    .nav-operator-btn span {
-        display: none;
+@media (max-width: 480px) {
+    .nav-container {
+        width: calc(100% - 20px);
+        padding: 0 12px;
+        height: 58px;
     }
-    .nav-operator-btn {
-        padding: 8px;
+    .brand-text {
+        font-size: 17px;
+    }
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+    }
+    .brand-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+    .language-btn {
+        padding: 5px 8px;
+        font-size: 11.5px;
+        height: 34px;
+    }
+    .mobile-menu-btn {
+        width: 34px;
+        height: 34px;
     }
 }

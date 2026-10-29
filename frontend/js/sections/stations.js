@@ -125,7 +125,7 @@ async function initStations() {
                         <!-- Tank Level Progress -->
                         <div class="card-level-progress-box">
                             <div class="card-progress-labels">
-                                <span>Water Level</span>
+                                <span></span>
                                 <strong>${level}% (${(station.tds_level || 110)} PPM)</strong>
                             </div>
                             <div class="progress-track">

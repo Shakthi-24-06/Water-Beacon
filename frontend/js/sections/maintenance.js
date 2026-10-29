@@ -64,8 +64,15 @@ async function initMaintenance() {
 
         if (emptyEl) emptyEl.style.display = "none";
 
+        const statusMap = {
+            OPEN: t("statusOpen", "Open"),
+            IN_PROGRESS: t("statusInProgress", "In Progress"),
+            COMPLETED: t("statusCompleted", "Completed")
+        };
+
         tbody.innerHTML = filtered.map(rec => {
             const sClass = (rec.status || "OPEN").toLowerCase().replace(/_/g, "-");
+            const localizedStatus = statusMap[rec.status] || rec.status;
 
             return `
                 <tr>
@@ -88,7 +95,7 @@ async function initMaintenance() {
                     <td>
                         <span class="maint-status-badge ${sClass}">
                             <span class="indicator"></span>
-                            ${rec.status}
+                            ${localizedStatus}
                         </span>
                     </td>
 

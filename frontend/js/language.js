@@ -139,7 +139,17 @@ const translations = {
         maintModalDesc: "Schedule preventative filter changes, UV bulb repairs, or pump maintenance.",
         submitBtn: "Submit",
         cancelBtn: "Cancel",
-        saveChangesBtn: "Save & Broadcast Status"
+        saveChangesBtn: "Save & Broadcast Status",
+
+        // Additional labels for forms & status badges
+        roLocation: "RO Station Location",
+        yourFullName: "Your Full Name",
+        contactPhone: "Contact Phone Number",
+        issueCategory: "Issue Category",
+        detailedDescription: "Detailed Description",
+        statusOpen: "Open",
+        statusInProgress: "In Progress",
+        statusCompleted: "Completed"
     },
 
     ta: {
@@ -282,7 +292,17 @@ const translations = {
         maintModalDesc: "வடிகட்டி மாற்றம், மோட்டார் பழுது அல்லது வழக்கமான சேவைக்கான பதிவு.",
         submitBtn: "சமர்ப்பிக்க",
         cancelBtn: "ரத்து செய்",
-        saveChangesBtn: "சேமித்து வெளியிடவும்"
+        saveChangesBtn: "சேமித்து வெளியிடவும்",
+
+        // Additional labels for forms & status badges
+        roLocation: "RO நிலைய இடம்",
+        yourFullName: "உங்கள் பெயர்",
+        contactPhone: "தொடர்பு எண்",
+        issueCategory: "சிக்கலின் வகை",
+        detailedDescription: "விவரம்",
+        statusOpen: "திறந்துள்ளது",
+        statusInProgress: "நடைபெறுகிறது",
+        statusCompleted: "முடிக்கப்பட்டது"
     }
 };
 
@@ -298,6 +318,10 @@ function applyLanguage(lang) {
     currentLanguage = lang;
     localStorage.setItem("waterBeaconLanguage", lang);
     document.documentElement.lang = lang;
+    document.documentElement.setAttribute("data-lang", lang);
+    if (document.body) {
+        document.body.classList.toggle("lang-ta", lang === "ta");
+    }
 
     // Translate text nodes
     document.querySelectorAll("[data-i18n]").forEach(element => {
@@ -338,3 +362,15 @@ function getTranslation(key, fallback = "") {
 
 window.t = getTranslation;
 window.applyLanguage = applyLanguage;
+
+// Immediate root attribute setup
+document.documentElement.lang = currentLanguage;
+document.documentElement.setAttribute("data-lang", currentLanguage);
+if (document.body) {
+    document.body.classList.toggle("lang-ta", currentLanguage === "ta");
+}
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.body) {
+        document.body.classList.toggle("lang-ta", currentLanguage === "ta");
+    }
+});
