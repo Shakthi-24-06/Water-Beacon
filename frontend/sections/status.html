@@ -45,7 +45,7 @@
             <!-- Central Tank Area with Graduated Measurement Scale -->
             <div class="tank-area">
 
-                <!-- Ambient SVG Droplets (Replacing Emojis) -->
+                <!-- Ambient SVG Droplets -->
                 <div class="ambient-drop drop-one">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
@@ -171,7 +171,7 @@
 
             </div>
 
-            <!-- Actions Bar: Refresh, Citizen Issue Report, Operator Mode -->
+            <!-- Actions Bar for Citizens: Refresh and Citizen Issue Report -->
             <div class="station-actions-bar">
                 <button type="button" class="btn btn-outline btn-sm" id="status-refresh-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="refresh-icon-svg">
@@ -182,21 +182,13 @@
                     <span data-i18n="refreshStatusBtn">Refresh Live Status</span>
                 </button>
 
-                <button type="button" class="btn btn-secondary btn-sm" id="status-report-issue-btn">
+                <button type="button" class="btn btn-primary btn-sm" id="status-report-issue-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                         <line x1="12" y1="9" x2="12" y2="13"/>
                         <line x1="12" y1="17" x2="12.01" y2="17"/>
                     </svg>
                     <span data-i18n="reportIssueBtn">Report Water Issue</span>
-                </button>
-
-                <button type="button" class="btn btn-primary btn-sm" id="status-operator-update-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 20h9"/>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                    </svg>
-                    <span data-i18n="updateStatusBtn">Operator Status Update</span>
                 </button>
             </div>
 

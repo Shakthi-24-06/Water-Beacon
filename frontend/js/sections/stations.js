@@ -66,12 +66,10 @@ async function initStations() {
         if (!grid) return;
 
         let filtered = allStations.filter(s => {
-            // Status filter
             if (currentFilter === "AVAILABLE" && s.status !== "AVAILABLE") return false;
             if (currentFilter === "UNDER_MAINTENANCE" && s.status !== "UNDER_MAINTENANCE" && s.status !== "REPAIR") return false;
             if (currentFilter === "OUT_OF_WATER" && s.status !== "OUT_OF_WATER") return false;
 
-            // Search filter
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 const matchName = s.village_name?.toLowerCase().includes(q);
@@ -137,19 +135,12 @@ async function initStations() {
                     </div>
 
                     <div class="station-card-footer">
-                        <button type="button" class="btn btn-outline btn-sm btn-select-station" data-village-id="${station.village_id}">
+                        <button type="button" class="btn btn-outline btn-sm btn-select-station" data-village-id="${station.village_id}" style="width: 100%;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
                             <span>${t("viewStationBtn", "View Live Monitor")}</span>
-                        </button>
-
-                        <button type="button" class="btn btn-secondary btn-sm btn-quick-operator" data-machine-id="${station.id}" title="Quick Status Update">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 20h9"/>
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                            </svg>
                         </button>
                     </div>
                 </div>
@@ -169,16 +160,6 @@ async function initStations() {
                         window.loadHeroStatus(vid);
                     }
                     document.getElementById("status")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-            });
-        });
-
-        // Attach Operator Quick Update Handlers
-        grid.querySelectorAll(".btn-quick-operator").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const mid = parseInt(btn.getAttribute("data-machine-id"), 10);
-                if (mid && typeof window.openOperatorModal === "function") {
-                    window.openOperatorModal(null, mid);
                 }
             });
         });
@@ -215,7 +196,6 @@ async function initStations() {
 
     window.reloadStationsGrid = loadStations;
 
-    // Language Change Listener
     window.addEventListener("languageChanged", () => {
         renderGrid();
     });

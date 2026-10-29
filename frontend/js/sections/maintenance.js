@@ -2,7 +2,6 @@ async function initMaintenance() {
     const tbody = document.getElementById("maintenance-tbody");
     const emptyEl = document.getElementById("maintenance-empty");
     const tabs = document.querySelectorAll(".maint-tab-btn");
-    const openNewBtn = document.getElementById("open-new-maintenance-btn");
 
     const countAll = document.getElementById("maint-count-all");
     const countActive = document.getElementById("maint-count-active");
@@ -28,7 +27,7 @@ async function initMaintenance() {
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">
                             Unable to load maintenance records.
                         </td>
                     </tr>
@@ -67,7 +66,6 @@ async function initMaintenance() {
 
         tbody.innerHTML = filtered.map(rec => {
             const sClass = (rec.status || "OPEN").toLowerCase().replace(/_/g, "-");
-            const canResolve = rec.status !== "COMPLETED";
 
             return `
                 <tr>
@@ -99,66 +97,9 @@ async function initMaintenance() {
                             ${rec.updated_by || "Assigned Technician"}
                         </span>
                     </td>
-
-                    <td>
-                        ${canResolve ? `
-                            <button type="button" class="btn btn-outline btn-sm btn-resolve-maint" data-id="${rec.id}">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                                <span>${t("markDone", "Mark Resolved")}</span>
-                            </button>
-                        ` : `
-                            <span style="font-size: 12px; color: #10b981; font-weight: 600;">
-                                ✓ Resolved
-                            </span>
-                        `}
-                    </td>
                 </tr>
             `;
         }).join("");
-
-        // Attach Resolve Handlers
-        tbody.querySelectorAll(".btn-resolve-maint").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const recId = btn.getAttribute("data-id");
-                if (!recId) return;
-
-                btn.disabled = true;
-                try {
-                    const res = await fetch(`/api/maintenance/${recId}`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ status: "COMPLETED" })
-                    });
-
-                    if (!res.ok) throw new Error("Failed to update ticket");
-
-                    if (typeof window.showToast === "function") {
-                        window.showToast("success", `Maintenance ticket #${recId} marked as completed.`);
-                    }
-
-                    await loadMaintenance();
-
-                    // Refresh stations grid and live monitor
-                    if (typeof window.reloadStationsGrid === "function") {
-                        window.reloadStationsGrid();
-                    }
-                    if (typeof window.loadWaterStatus === "function") {
-                        window.loadWaterStatus(window.selectedVillageId || 1);
-                    }
-                    if (typeof window.loadHeroStatus === "function") {
-                        window.loadHeroStatus(window.selectedVillageId || 1);
-                    }
-                } catch (err) {
-                    console.error("Resolve error:", err);
-                    btn.disabled = false;
-                    if (typeof window.showToast === "function") {
-                        window.showToast("error", "Failed to resolve ticket. Please try again.");
-                    }
-                }
-            });
-        });
     }
 
     function formatDate(val) {
@@ -168,7 +109,6 @@ async function initMaintenance() {
         return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
     }
 
-    // Tabs Event Handlers
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             tabs.forEach(t => t.classList.remove("active"));
@@ -178,18 +118,8 @@ async function initMaintenance() {
         });
     });
 
-    // Open Log Maintenance Modal
-    if (openNewBtn) {
-        openNewBtn.addEventListener("click", () => {
-            if (typeof window.openMaintenanceModal === "function") {
-                window.openMaintenanceModal();
-            }
-        });
-    }
-
     window.reloadMaintenanceList = loadMaintenance;
 
-    // Language Change Listener
     window.addEventListener("languageChanged", () => {
         renderTable();
     });

@@ -4,7 +4,6 @@ function initNavbar() {
     const languageMenu = document.getElementById("language-menu");
     const mobileMenuBtn = document.getElementById("mobile-menu-btn");
     const navLinks = document.getElementById("main-nav-links");
-    const operatorBtn = document.getElementById("nav-operator-btn");
 
     // Scroll listener for sticky drop shadow
     window.addEventListener("scroll", () => {
@@ -70,15 +69,6 @@ function initNavbar() {
             a.classList.toggle("active", a.getAttribute("href") === `#${current}`);
         });
     }, { passive: true });
-
-    // Operator Button Click -> Open Operator Update Modal
-    if (operatorBtn) {
-        operatorBtn.addEventListener("click", () => {
-            if (typeof window.openOperatorModal === "function") {
-                window.openOperatorModal();
-            }
-        });
-    }
 }
 
 window.initNavbar = initNavbar;

@@ -22,7 +22,6 @@ async function initStatus() {
     const refreshBtn = document.getElementById("status-refresh-btn");
     const refreshIcon = document.getElementById("refresh-icon-svg");
     const reportIssueBtn = document.getElementById("status-report-issue-btn");
-    const operatorUpdateBtn = document.getElementById("status-operator-update-btn");
 
     function t(key, fallback = "") {
         return (typeof window.t === "function") ? window.t(key, fallback) : fallback || key;
@@ -99,7 +98,6 @@ async function initStatus() {
 
             updateStatusUI(data);
 
-            // Sync dropdown value
             if (stationSelect && stationSelect.value !== String(villageId)) {
                 stationSelect.value = String(villageId);
             }
@@ -137,7 +135,6 @@ async function initStatus() {
         if (locationDetailEl) locationDetailEl.textContent = `${data.location || "Main Road"}, ${data.district}`;
         if (updatedEl) updatedEl.textContent = formatTime(data.last_updated);
 
-        // Update Tank Height & Class
         if (tankWaterEl) {
             tankWaterEl.style.height = `${Math.max(6, Math.min(100, pct))}%`;
             tankWaterEl.className = "tank-water";
@@ -145,14 +142,12 @@ async function initStatus() {
             tankWaterEl.classList.add(sClass);
         }
 
-        // Update Banner Status Box
         if (statusBox) {
             statusBox.className = "status-result";
             const sClass = (data.status || "AVAILABLE").toLowerCase().replace(/_/g, "-");
             statusBox.classList.add(sClass);
         }
 
-        // Status Titles & Messages
         if (data.status === "AVAILABLE") {
             statusTitleEl.textContent = t("waterAvailable", "WATER AVAILABLE");
             statusMessageEl.textContent = t("waterAvailableMessage", "Drinking water is safe, pure, and currently dispensing.");
@@ -183,7 +178,6 @@ async function initStatus() {
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + " (" + d.toLocaleDateString([], { month: "short", day: "numeric" }) + ")";
     }
 
-    // Refresh Live Status Button
     if (refreshBtn) {
         refreshBtn.addEventListener("click", async () => {
             refreshIcon?.classList.add("spin");
@@ -204,7 +198,6 @@ async function initStatus() {
         });
     }
 
-    // Button: Report Issue
     if (reportIssueBtn) {
         reportIssueBtn.addEventListener("click", () => {
             if (typeof window.openReportModal === "function") {
@@ -213,23 +206,12 @@ async function initStatus() {
         });
     }
 
-    // Button: Operator Status Update
-    if (operatorUpdateBtn) {
-        operatorUpdateBtn.addEventListener("click", () => {
-            if (typeof window.openOperatorModal === "function") {
-                window.openOperatorModal(window.selectedVillageId || 1);
-            }
-        });
-    }
-
-    // Sync listener when village selected from hero or stations
     window.syncSelectedVillage = function(villageId) {
         loadWaterStatus(villageId);
     };
 
     window.loadWaterStatus = loadWaterStatus;
 
-    // Language change listener
     window.addEventListener("languageChanged", () => {
         loadWaterStatus(window.selectedVillageId || 1);
     });
