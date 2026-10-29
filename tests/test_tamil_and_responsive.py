@@ -50,6 +50,9 @@ class TestTamilAndResponsiveDesign(unittest.TestCase):
         self.assertIn('html[lang="ta"] .hero-headline', content)
         # Search input allows flex shrink without clipping
         self.assertIn("min-width: 0", content)
+        # Word integrity: entire 'தெரிந்துகொள்ளுங்கள்...' is kept together on the same line
+        self.assertIn('html[lang="ta"] .hero-headline .hero-highlight', content)
+        self.assertIn("white-space: nowrap !important;", content)
 
     def test_05_status_details_grid_responsive(self):
         res = self.client.get("/css/sections/status.css")

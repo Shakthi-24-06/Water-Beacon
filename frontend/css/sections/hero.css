@@ -66,6 +66,10 @@
     max-width: 600px;
 }
 
+html[lang="ta"] .hero-content {
+    max-width: 640px;
+}
+
 .hero-headline {
     margin: 0 0 20px;
     color: #0f172a;
@@ -75,6 +79,7 @@
     letter-spacing: -1.5px;
     word-break: keep-all;
     overflow-wrap: break-word;
+    text-wrap: balance;
 }
 
 .hero-highlight {
@@ -85,10 +90,29 @@
     -webkit-text-fill-color: transparent;
 }
 
+/* ==========================================================================
+   TAMIL HERO HEADLINE BALANCING & WORD INTEGRITY
+   Ensures 'செல்வதற்கு முன்,' and 'தெரிந்துகொள்ளுங்கள்...' are each kept whole
+   on their respective lines, eliminating orphan character wrap.
+   ========================================================================== */
 html[lang="ta"] .hero-headline {
-    font-size: clamp(26px, 3.8vw, 44px);
+    font-size: clamp(24px, 3.2vw, 38px);
+    font-weight: 800;
     line-height: 1.35;
     letter-spacing: 0 !important;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+html[lang="ta"] .hero-headline > span:first-child {
+    display: block;
+    white-space: nowrap;
+}
+
+html[lang="ta"] .hero-headline .hero-highlight {
+    display: inline-block;
+    white-space: nowrap !important;
+    max-width: 100%;
 }
 
 .hero-description {
@@ -576,9 +600,22 @@ html[lang="ta"] .stat-label {
     .hero-content {
         max-width: none;
     }
+    html[lang="ta"] .hero-content {
+        max-width: none;
+    }
+    html[lang="ta"] .hero-headline {
+        font-size: clamp(22px, 4.2vw, 34px);
+    }
     .dashboard-card {
         max-width: 520px;
         margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    html[lang="ta"] .hero-headline {
+        font-size: clamp(20px, 5.6vw, 24px);
+        line-height: 1.3;
     }
 }
 
