@@ -1,0 +1,92 @@
+<section class="stations-section" id="stations">
+    <div class="container">
+
+        <!-- Section Header -->
+        <div class="stations-header reveal">
+            <div class="section-tag">
+                <span class="section-tag-dot"></span>
+                <span data-i18n="exploreStations">ALL STATIONS</span>
+            </div>
+
+            <h2 class="section-title">
+                <span data-i18n="explorerTitle">RO Stations Directory</span>
+            </h2>
+
+            <p class="section-subtitle" data-i18n="explorerSubtitle">
+                Browse, filter, and monitor all community water plants across the district.
+            </p>
+        </div>
+
+        <!-- Controls Toolbar: Search, Status Filters, Export -->
+        <div class="stations-toolbar reveal">
+
+            <!-- Search Field -->
+            <div class="stations-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="M20 20L16.2 16.2"/>
+                </svg>
+                <input
+                    type="text"
+                    id="station-filter-search"
+                    data-i18n-placeholder="searchStationInput"
+                    placeholder="Search by village, machine name, or locality..."
+                >
+            </div>
+
+            <!-- Filter Status Chips -->
+            <div class="filter-chips-group">
+                <button type="button" class="filter-chip active" data-filter="ALL">
+                    <span data-i18n="filterAll">All Stations</span>
+                    <span class="chip-count" id="count-all">0</span>
+                </button>
+                <button type="button" class="filter-chip" data-filter="AVAILABLE">
+                    <span data-i18n="filterAvailable">Available</span>
+                    <span class="chip-count" id="count-available">0</span>
+                </button>
+                <button type="button" class="filter-chip" data-filter="UNDER_MAINTENANCE">
+                    <span data-i18n="filterMaintenance">Maintenance</span>
+                    <span class="chip-count" id="count-maint">0</span>
+                </button>
+                <button type="button" class="filter-chip" data-filter="OUT_OF_WATER">
+                    <span data-i18n="filterOutOfWater">Out of Water</span>
+                    <span class="chip-count" id="count-empty">0</span>
+                </button>
+            </div>
+
+            <!-- Actions: Export CSV -->
+            <div class="toolbar-actions">
+                <a href="/api/export/status-csv" class="btn btn-outline btn-sm" id="export-csv-btn" download>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span data-i18n="exportCsvBtn">Download Status CSV</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Stations Grid -->
+        <div class="stations-grid" id="stations-grid">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="stations-empty-state" id="stations-empty-state" style="display: none;">
+            <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </div>
+            <h4>No stations match your filter</h4>
+            <p>Try searching with another village name or clearing your status filter.</p>
+            <button type="button" class="btn btn-secondary btn-sm" id="reset-station-filters-btn">
+                Reset Filters
+            </button>
+        </div>
+
+    </div>
+</section>

@@ -1,0 +1,226 @@
+<!-- ==========================================================================
+     GLOBAL INTERACTIVE MODALS
+     ========================================================================== -->
+
+<!-- 1. OPERATOR UPDATE MODAL -->
+<div class="modal-overlay" id="modal-operator">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div>
+                <h3 data-i18n="operatorModalTitle">Operator Status Update</h3>
+                <p style="font-size: 12.5px; color: var(--text-muted);" data-i18n="operatorModalDesc">
+                    Panchayat Operators: Update live dispensing status and water level.
+                </p>
+            </div>
+            <button type="button" class="modal-close-btn" data-close-modal="modal-operator" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="form-operator-update">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="op-machine-select">Target RO Machine / Village</label>
+                    <select id="op-machine-select" class="form-control" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="op-status-select">Dispensing Status</label>
+                        <select id="op-status-select" class="form-control" required>
+                            <option value="AVAILABLE">WATER AVAILABLE</option>
+                            <option value="OUT_OF_WATER">OUT OF WATER</option>
+                            <option value="UNDER_MAINTENANCE">UNDER MAINTENANCE</option>
+                            <option value="REPAIR">UNDER REPAIR</option>
+                            <option value="TEMPORARILY_CLOSED">TEMPORARILY CLOSED</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="op-water-level">Water Tank Level (%)</label>
+                        <input type="number" id="op-water-level" class="form-control" min="0" max="100" value="85" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="op-tds-level">Water TDS Purity (PPM)</label>
+                        <input type="number" id="op-tds-level" class="form-control" min="10" max="1000" value="110">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="op-updated-by">Operator Name</label>
+                        <input type="text" id="op-updated-by" class="form-control" value="Muthu K (Panchayat Operator)" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="op-remarks">Status Log Notes / Reason</label>
+                    <textarea id="op-remarks" class="form-control" rows="2" placeholder="e.g. Morning overhead tank refill completed. Safe drinking water dispensing."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-close-modal="modal-operator" data-i18n="cancelBtn">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-operator">
+                    <span data-i18n="saveChangesBtn">Save & Broadcast Status</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. CITIZEN ISSUE REPORT MODAL -->
+<div class="modal-overlay" id="modal-report">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div>
+                <h3 data-i18n="reportModalTitle">Report a Water Problem</h3>
+                <p style="font-size: 12.5px; color: var(--text-muted);" data-i18n="reportModalDesc">
+                    Notify local maintenance teams about RO plant issues or water taste.
+                </p>
+            </div>
+            <button type="button" class="modal-close-btn" data-close-modal="modal-report" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="form-citizen-report">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="rep-machine-select">RO Station Location</label>
+                    <select id="rep-machine-select" class="form-control" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rep-name">Your Full Name</label>
+                        <input type="text" id="rep-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rep-phone">Contact Phone Number</label>
+                        <input type="tel" id="rep-phone" class="form-control" placeholder="e.g. 94420 00000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rep-issue-type">Issue Category</label>
+                    <select id="rep-issue-type" class="form-control" required>
+                        <option value="Low Pressure">Low Water Flow / Pressure Drop</option>
+                        <option value="Water Taste or Odor">Strange Taste / High Salinity / Odor</option>
+                        <option value="Dispenser Tap Leak">Dispenser Tap Leakage / Spillage</option>
+                        <option value="Card Machine Down">Smart Card / Token Reader Error</option>
+                        <option value="Station Power Outage">RO Station Power Failure</option>
+                        <option value="Other">Other Operational Issue</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="rep-description">Detailed Description</label>
+                    <textarea id="rep-description" class="form-control" rows="3" placeholder="Please describe what you observed at the station..." required></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-close-modal="modal-report" data-i18n="cancelBtn">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-report">
+                    <span data-i18n="submitBtn">Submit Report</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3. LOG MAINTENANCE RECORD MODAL -->
+<div class="modal-overlay" id="modal-maintenance">
+    <div class="modal-container">
+        <div class="modal-header">
+            <div>
+                <h3 data-i18n="maintModalTitle">Log Maintenance Ticket</h3>
+                <p style="font-size: 12.5px; color: var(--text-muted);" data-i18n="maintModalDesc">
+                    Schedule preventative filter replacements or pump repairs.
+                </p>
+            </div>
+            <button type="button" class="modal-close-btn" data-close-modal="modal-maintenance" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="form-log-maintenance">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="maint-machine-select">Target RO Machine</label>
+                    <select id="maint-machine-select" class="form-control" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="maint-issue-type">Service Task / Issue Type</label>
+                    <select id="maint-issue-type" class="form-control" required>
+                        <option value="Sediment & Carbon Filter Replacement">Sediment & Carbon Filter Replacement</option>
+                        <option value="RO Membrane Descaling & Flushing">RO Membrane Descaling & Flushing</option>
+                        <option value="UV Sterilizer Lamp Replacement">UV Sterilizer Lamp Replacement</option>
+                        <option value="High-Pressure Booster Pump Service">High-Pressure Booster Pump Service</option>
+                        <option value="Raw Water TDS Sensor Calibration">Raw Water TDS Sensor Calibration</option>
+                        <option value="Storage Tank Sanitization">Storage Tank Sanitization</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="maint-desc">Scope of Work & Details</label>
+                    <textarea id="maint-desc" class="form-control" rows="2" placeholder="Describe the maintenance checklist, parts replaced, or service scope..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="maint-technician">Assigned Technician</label>
+                        <input type="text" id="maint-technician" class="form-control" value="District Water Technician" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maint-expected-date">Target Resolution Date</label>
+                        <input type="date" id="maint-expected-date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" id="maint-auto-status" checked style="width: 16px; height: 16px;">
+                        <span>Automatically set machine status to <strong>UNDER MAINTENANCE</strong></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-close-modal="modal-maintenance" data-i18n="cancelBtn">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-maint">
+                    <span data-i18n="submitBtn">Create Ticket</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>

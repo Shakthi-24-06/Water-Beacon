@@ -1,0 +1,76 @@
+<section class="maintenance-section" id="maintenance">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="maintenance-header reveal">
+            <div class="section-tag">
+                <span class="section-tag-dot"></span>
+                <span data-i18n="maintenance">MAINTENANCE & SERVICING</span>
+            </div>
+
+            <h2 class="section-title">
+                <span data-i18n="maintenanceTitle">Active Maintenance & Repairs</span>
+            </h2>
+
+            <p class="section-subtitle" data-i18n="maintenanceSubtitle">
+                Transparent service logs, membrane replacement cycles, and repair tracking.
+            </p>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="maintenance-toolbar reveal">
+            <div class="maintenance-tabs">
+                <button type="button" class="maint-tab-btn active" data-tab="ALL">
+                    <span data-i18n="filterAllTickets">All Records</span>
+                    <span class="tab-badge" id="maint-count-all">0</span>
+                </button>
+                <button type="button" class="maint-tab-btn" data-tab="ACTIVE">
+                    <span data-i18n="filterActiveTickets">Active / Open</span>
+                    <span class="tab-badge" id="maint-count-active">0</span>
+                </button>
+                <button type="button" class="maint-tab-btn" data-tab="COMPLETED">
+                    <span data-i18n="filterCompletedTickets">Completed</span>
+                    <span class="tab-badge" id="maint-count-completed">0</span>
+                </button>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm" id="open-new-maintenance-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span data-i18n="logMaintenanceBtn">Log Maintenance Ticket</span>
+            </button>
+        </div>
+
+        <!-- Maintenance List Table / Cards -->
+        <div class="maintenance-card-container modern-card reveal">
+            <div class="table-responsive">
+                <table class="maintenance-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="machineCol">Station / Village</th>
+                            <th data-i18n="issueTypeCol">Issue / Task</th>
+                            <th data-i18n="startedCol">Reported Date</th>
+                            <th data-i18n="statusCol">Service Status</th>
+                            <th data-i18n="technicianCol">Technician</th>
+                            <th data-i18n="actionCol">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenance-tbody">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="maintenance-empty" id="maintenance-empty" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <h4>All Systems Operational</h4>
+                <p>No open maintenance tickets found for this filter.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
