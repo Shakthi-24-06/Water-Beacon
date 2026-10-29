@@ -35,11 +35,16 @@ async function initStatus() {
             const villages = await res.json();
 
             if (stationSelect) {
-                stationSelect.innerHTML = villages.map(v => `
-                    <option value="${v.id}" ${v.id === (window.selectedVillageId || 1) ? "selected" : ""}>
-                        ${v.name} (${v.district}) - ${v.machine_name || "RO Unit"}
-                    </option>
-                `).join("");
+                stationSelect.innerHTML = villages.map(v => {
+                    const vName = (typeof window.translateVillage === "function") ? window.translateVillage(v.name) : v.name;
+                    const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(v.district) : v.district;
+                    const mName = (typeof window.translateMachine === "function") ? window.translateMachine(v.machine_name) : (v.machine_name || "RO Unit");
+                    return `
+                        <option value="${v.id}" ${v.id === (window.selectedVillageId || 1) ? "selected" : ""}>
+                            ${vName} (${dist}) - ${mName}
+                        </option>
+                    `;
+                }).join("");
 
                 stationSelect.addEventListener("change", (e) => {
                     const vid = parseInt(e.target.value, 10);
@@ -109,12 +114,18 @@ async function initStatus() {
     }
 
     function updateStatusUI(data) {
-        if (villageNameEl) villageNameEl.textContent = data.village_name;
-        if (machineNameEl) machineNameEl.textContent = data.machine_name;
+        const vName = (typeof window.translateVillage === "function") ? window.translateVillage(data.village_name) : data.village_name;
+        const mName = (typeof window.translateMachine === "function") ? window.translateMachine(data.machine_name) : data.machine_name;
+        const loc = (typeof window.translateLocation === "function") ? window.translateLocation(data.location) : (data.location || t("mainRoadLoc", "Main Road"));
+        const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(data.district) : data.district;
+        const opName = (typeof window.translateOperator === "function") ? window.translateOperator(data.operator_name) : (data.operator_name || t("defaultOperatorTitle", "Local Panchayat Operator"));
+
+        if (villageNameEl) villageNameEl.textContent = vName;
+        if (machineNameEl) machineNameEl.textContent = mName;
         if (tdsEl) tdsEl.textContent = `${data.tds_level || 110} PPM`;
 
         const capacity = data.tank_capacity_liters || 5000;
-        if (capacityEl) capacityEl.textContent = `${capacity.toLocaleString()} Liters`;
+        if (capacityEl) capacityEl.textContent = `${capacity.toLocaleString()} ${t("litersUnit", "Liters")}`;
 
         const pct = data.water_level_pct !== null && data.water_level_pct !== undefined
             ? data.water_level_pct
@@ -123,16 +134,16 @@ async function initStatus() {
         if (waterLevelEl) waterLevelEl.textContent = `${pct}%`;
 
         const estLiters = Math.round((pct / 100) * capacity);
-        if (tankLitersEstEl) tankLitersEstEl.textContent = `Approx. ${estLiters.toLocaleString()} L in tank`;
+        if (tankLitersEstEl) tankLitersEstEl.textContent = `${t("approxInTank", "Approx.")} ${estLiters.toLocaleString()} ${t("litersShort", "L")} ${t("inTankText", "in tank")}`;
 
-        if (operatorEl) operatorEl.textContent = data.operator_name || "Local Panchayat Operator";
+        if (operatorEl) operatorEl.textContent = opName;
         if (operatorPhoneEl) {
             const phone = data.operator_phone || "+91 94421 88200";
             operatorPhoneEl.textContent = phone;
             operatorPhoneEl.href = `tel:${phone.replace(/\s+/g, "")}`;
         }
 
-        if (locationDetailEl) locationDetailEl.textContent = `${data.location || "Main Road"}, ${data.district}`;
+        if (locationDetailEl) locationDetailEl.textContent = `${loc}, ${dist}`;
         if (updatedEl) updatedEl.textContent = formatTime(data.last_updated);
 
         if (tankWaterEl) {
@@ -172,10 +183,16 @@ async function initStatus() {
     }
 
     function formatTime(val) {
-        if (!val) return t("unknown", "Just now");
+        if (!val) return t("justNow", "Just now");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;
-        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + " (" + d.toLocaleDateString([], { month: "short", day: "numeric" }) + ")";
+        const lang = document.documentElement.lang;
+        if (lang === "ta") {
+            const timeStr = d.toLocaleTimeString("ta-IN", { hour: "2-digit", minute: "2-digit" });
+            const dateStr = d.toLocaleDateString("ta-IN", { month: "short", day: "numeric" });
+            return `${timeStr} (${dateStr})`;
+        }
+        return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + " (" + d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ")";
     }
 
     if (refreshBtn) {
@@ -192,7 +209,7 @@ async function initStatus() {
                 refreshIcon?.classList.remove("spin");
                 refreshBtn.disabled = false;
                 if (typeof window.showToast === "function") {
-                    window.showToast("success", "Water status refreshed with live server telemetry.");
+                    window.showToast("success", t("statusRefreshedToast", "Water status refreshed with live server telemetry."));
                 }
             }, 600);
         });
@@ -213,6 +230,7 @@ async function initStatus() {
     window.loadWaterStatus = loadWaterStatus;
 
     window.addEventListener("languageChanged", () => {
+        populateStationsDropdown();
         loadWaterStatus(window.selectedVillageId || 1);
     });
 

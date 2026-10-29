@@ -28,6 +28,9 @@ async function initHero() {
     }
 
     function getStatusLabel(status) {
+        if (typeof window.getStatusLabel === "function") {
+            return window.getStatusLabel(status);
+        }
         const map = {
             AVAILABLE: t("waterAvailable", "Water Available"),
             OUT_OF_WATER: t("outOfWater", "Out of Water"),
@@ -90,10 +93,16 @@ async function initHero() {
     }
 
     function updateHeroUI(data) {
-        if (villageName) villageName.textContent = data.village_name;
-        if (locationName) locationName.textContent = `${data.district}, ${data.state || "Tamil Nadu"}`;
-        if (machineName) machineName.textContent = data.machine_name;
-        if (machineLocation) machineLocation.textContent = data.location || t("locationUnavailable", "Main Road");
+        const vName = (typeof window.translateVillage === "function") ? window.translateVillage(data.village_name) : data.village_name;
+        const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(data.district) : data.district;
+        const mName = (typeof window.translateMachine === "function") ? window.translateMachine(data.machine_name) : data.machine_name;
+        const loc = (typeof window.translateLocation === "function") ? window.translateLocation(data.location) : (data.location || t("mainRoadLoc", "Village Main Road"));
+        const stateName = (typeof window.translateState === "function") ? window.translateState(data.state) : (data.state || t("stateTamilNadu", "Tamil Nadu"));
+
+        if (villageName) villageName.textContent = vName;
+        if (locationName) locationName.textContent = `${dist}, ${stateName}`;
+        if (machineName) machineName.textContent = mName;
+        if (machineLocation) machineLocation.textContent = loc;
         if (lastUpdated) lastUpdated.textContent = formatTime(data.last_updated);
 
         // Water level %
@@ -102,7 +111,7 @@ async function initHero() {
 
         // TDS & Capacity
         if (tdsVal) tdsVal.textContent = `${data.tds_level || 110} PPM`;
-        if (capacityVal) capacityVal.textContent = `${(data.tank_capacity_liters || 5000).toLocaleString()} L`;
+        if (capacityVal) capacityVal.textContent = `${(data.tank_capacity_liters || 5000).toLocaleString()} ${t("litersShort", "L")}`;
 
         // Status Badge & Classes
         if (statusPill) {
@@ -123,10 +132,16 @@ async function initHero() {
     }
 
     function formatTime(val) {
-        if (!val) return t("unknown", "Just now");
+        if (!val) return t("justNow", "Just now");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;
-        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ", " + d.toLocaleDateString([], { month: "short", day: "numeric" });
+        const lang = document.documentElement.lang;
+        if (lang === "ta") {
+            const timeStr = d.toLocaleTimeString("ta-IN", { hour: "2-digit", minute: "2-digit" });
+            const dateStr = d.toLocaleDateString("ta-IN", { month: "short", day: "numeric" });
+            return `${timeStr}, ${dateStr}`;
+        }
+        return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + ", " + d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     }
 
     // Preload Villages for Instant Autocomplete
@@ -156,11 +171,19 @@ async function initHero() {
                     return;
                 }
 
-                const matches = allVillagesCache.filter(v =>
-                    v.name.toLowerCase().includes(q) ||
-                    v.district.toLowerCase().includes(q) ||
-                    (v.machine_name && v.machine_name.toLowerCase().includes(q))
-                );
+                const matches = allVillagesCache.filter(v => {
+                    const vNameTa = (typeof window.translateVillage === "function") ? window.translateVillage(v.name).toLowerCase() : "";
+                    const distTa = (typeof window.translateDistrict === "function") ? window.translateDistrict(v.district).toLowerCase() : "";
+                    const mNameTa = (typeof window.translateMachine === "function") ? window.translateMachine(v.machine_name).toLowerCase() : "";
+                    return (
+                        v.name.toLowerCase().includes(q) ||
+                        v.district.toLowerCase().includes(q) ||
+                        (v.machine_name && v.machine_name.toLowerCase().includes(q)) ||
+                        vNameTa.includes(q) ||
+                        distTa.includes(q) ||
+                        mNameTa.includes(q)
+                    );
+                });
 
                 if (matches.length === 0) {
                     suggestionsBox.innerHTML = `
@@ -176,11 +199,14 @@ async function initHero() {
 
                 suggestionsBox.innerHTML = matches.slice(0, 5).map(v => {
                     const statusClass = (v.status || "AVAILABLE").toLowerCase().replace(/_/g, "-");
+                    const vName = (typeof window.translateVillage === "function") ? window.translateVillage(v.name) : v.name;
+                    const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(v.district) : v.district;
+                    const mName = (typeof window.translateMachine === "function") ? window.translateMachine(v.machine_name) : (v.machine_name || "RO Machine");
                     return `
                         <div class="suggestion-item" data-id="${v.id}">
                             <div class="suggestion-info">
-                                <strong>${v.name}</strong>
-                                <span>${v.machine_name || "RO Machine"} • ${v.district}</span>
+                                <strong>${vName}</strong>
+                                <span>${mName} • ${dist}</span>
                             </div>
                             <span class="status-badge ${statusClass}" style="font-size: 10.5px; padding: 3px 8px;">
                                 <span class="indicator"></span>
@@ -244,10 +270,15 @@ async function initHero() {
                 return;
             }
 
-            const found = allVillagesCache.find(v =>
-                v.name.toLowerCase() === q ||
-                v.name.toLowerCase().startsWith(q)
-            );
+            const found = allVillagesCache.find(v => {
+                const vNameTa = (typeof window.translateVillage === "function") ? window.translateVillage(v.name).toLowerCase() : "";
+                return (
+                    v.name.toLowerCase() === q ||
+                    v.name.toLowerCase().startsWith(q) ||
+                    vNameTa === q ||
+                    vNameTa.startsWith(q)
+                );
+            });
 
             if (found) {
                 selectVillage(found.id);

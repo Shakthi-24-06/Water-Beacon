@@ -14,16 +14,16 @@ function showToast(type = "info", message = "", title = "") {
     let iconSvg = "";
     if (type === "success") {
         iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-        title = title || "Success";
+        title = title || ((typeof window.t === "function") ? window.t("toastSuccess", "Success") : "Success");
     } else if (type === "error") {
         iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-        title = title || "Error";
+        title = title || ((typeof window.t === "function") ? window.t("toastError", "Error") : "Error");
     } else if (type === "warning") {
         iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-        title = title || "Notice";
+        title = title || ((typeof window.t === "function") ? window.t("toastNotice", "Notice") : "Notice");
     } else {
         iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-        title = title || "Information";
+        title = title || ((typeof window.t === "function") ? window.t("toastInfo", "Information") : "Information");
     }
 
     toast.innerHTML = `
@@ -85,9 +85,12 @@ async function populateMachineSelect(selectId, selectedMachineId = null, selecte
         select.innerHTML = machines.map(m => {
             const isSelected = (selectedMachineId && m.id === selectedMachineId) ||
                                (!selectedMachineId && selectedVillageId && m.village_id === selectedVillageId);
+            const vName = (typeof window.translateVillage === "function") ? window.translateVillage(m.village_name) : m.village_name;
+            const mName = (typeof window.translateMachine === "function") ? window.translateMachine(m.machine_name) : m.machine_name;
+            const sLabel = (typeof window.getStatusLabel === "function") ? window.getStatusLabel(m.status) : m.status;
             return `
                 <option value="${m.id}" data-village-id="${m.village_id}" data-status="${m.status}" data-level="${m.water_level_pct}" data-tds="${m.tds_level}" ${isSelected ? "selected" : ""}>
-                    ${m.village_name} - ${m.machine_name} (${m.status})
+                    ${vName} - ${mName} (${sLabel})
                 </option>
             `;
         }).join("");
@@ -237,7 +240,7 @@ function setupModalsAndForms() {
             if (!machineId || !name || !phone) return;
 
             btn.disabled = true;
-            btn.textContent = "Submitting...";
+            btn.textContent = (typeof window.t === "function") ? window.t("submittingBtn", "Submitting...") : "Submitting...";
 
             try {
                 const res = await fetch("/api/reports", {
@@ -255,16 +258,18 @@ function setupModalsAndForms() {
                 if (!res.ok) throw new Error("Report submission failed");
                 const data = await res.json();
 
-                showToast("success", `Report #${data.report_id} received. Local Panchayat maintenance team has been alerted.`);
+                const successMsg = (typeof window.t === "function") ? window.t("reportSuccessToast", "Report received. Local Panchayat maintenance team has been alerted.") : "Report received. Local Panchayat maintenance team has been alerted.";
+                showToast("success", `#${data.report_id}: ${successMsg}`);
                 repForm.reset();
                 closeModal("modal-report");
 
             } catch (err) {
                 console.error("Report error:", err);
-                showToast("error", "Unable to submit report. Please check details and try again.");
+                const errorMsg = (typeof window.t === "function") ? window.t("reportErrorToast", "Unable to submit report. Please check details and try again.") : "Unable to submit report. Please check details and try again.";
+                showToast("error", errorMsg);
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Submit Report";
+                btn.textContent = (typeof window.t === "function") ? window.t("submitBtn", "Submit Report") : "Submit Report";
             }
         });
     }

@@ -73,17 +73,23 @@ async function initMaintenance() {
         tbody.innerHTML = filtered.map(rec => {
             const sClass = (rec.status || "OPEN").toLowerCase().replace(/_/g, "-");
             const localizedStatus = statusMap[rec.status] || rec.status;
+            const vName = (typeof window.translateVillage === "function") ? window.translateVillage(rec.village_name) : (rec.village_name || "Village");
+            const mName = (typeof window.translateMachine === "function") ? window.translateMachine(rec.machine_name) : (rec.machine_name || "RO Unit");
+            const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(rec.district) : (rec.district || "");
+            const issue = (typeof window.translateIssue === "function") ? window.translateIssue(rec.issue_type) : rec.issue_type;
+            const desc = (typeof window.translateDescription === "function") ? window.translateDescription(rec.description) : (rec.description || t("routineMaintenanceDesc", "Routine maintenance procedure."));
+            const tech = (typeof window.translateOperator === "function") ? window.translateOperator(rec.updated_by) : (rec.updated_by || t("assignedTechnician", "Assigned Technician"));
 
             return `
                 <tr>
                     <td class="station-cell">
-                        <strong>${rec.village_name || "Village"}</strong>
-                        <span>${rec.machine_name || "RO Unit"} • ${rec.district || ""}</span>
+                        <strong>${vName}</strong>
+                        <span>${mName}${dist ? " • " + dist : ""}</span>
                     </td>
 
                     <td class="issue-cell">
-                        <strong>${rec.issue_type}</strong>
-                        <p>${rec.description || "Routine maintenance procedure."}</p>
+                        <strong>${issue}</strong>
+                        <p>${desc}</p>
                     </td>
 
                     <td>
@@ -101,7 +107,7 @@ async function initMaintenance() {
 
                     <td>
                         <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
-                            ${rec.updated_by || "Assigned Technician"}
+                            ${tech}
                         </span>
                     </td>
                 </tr>
@@ -110,10 +116,14 @@ async function initMaintenance() {
     }
 
     function formatDate(val) {
-        if (!val) return "N/A";
+        if (!val) return t("notAvailable", "N/A");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;
-        return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+        const lang = document.documentElement.lang;
+        if (lang === "ta") {
+            return d.toLocaleDateString("ta-IN", { month: "short", day: "numeric", year: "numeric" });
+        }
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     }
 
     tabs.forEach(tab => {

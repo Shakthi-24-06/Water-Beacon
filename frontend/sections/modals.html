@@ -32,30 +32,30 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="rep-name" data-i18n="yourFullName">Your Full Name</label>
-                        <input type="text" id="rep-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                        <input type="text" id="rep-name" class="form-control" data-i18n-placeholder="namePlaceholder" placeholder="e.g. Ramesh Kumar" required>
                     </div>
 
                     <div class="form-group">
                         <label for="rep-phone" data-i18n="contactPhone">Contact Phone Number</label>
-                        <input type="tel" id="rep-phone" class="form-control" placeholder="e.g. 94420 00000" required>
+                        <input type="tel" id="rep-phone" class="form-control" data-i18n-placeholder="phonePlaceholder" placeholder="e.g. 94420 00000" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="rep-issue-type" data-i18n="issueCategory">Issue Category</label>
                     <select id="rep-issue-type" class="form-control" required>
-                        <option value="Low Pressure">Low Water Flow / Pressure Drop</option>
-                        <option value="Water Taste or Odor">Strange Taste / High Salinity / Odor</option>
-                        <option value="Dispenser Tap Leak">Dispenser Tap Leakage / Spillage</option>
-                        <option value="Card Machine Down">Smart Card / Token Reader Error</option>
-                        <option value="Station Power Outage">RO Station Power Failure</option>
-                        <option value="Other">Other Operational Issue</option>
+                        <option value="Low Pressure" data-i18n="issueLowPressure">Low Water Flow / Pressure Drop</option>
+                        <option value="Water Taste or Odor" data-i18n="issueTasteOdor">Strange Taste / High Salinity / Odor</option>
+                        <option value="Dispenser Tap Leak" data-i18n="issueTapLeak">Dispenser Tap Leakage / Spillage</option>
+                        <option value="Card Machine Down" data-i18n="issueCardMachine">Smart Card / Token Reader Error</option>
+                        <option value="Station Power Outage" data-i18n="issuePowerOutage">RO Station Power Failure</option>
+                        <option value="Other" data-i18n="issueOther">Other Operational Issue</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="rep-description" data-i18n="detailedDescription">Detailed Description</label>
-                    <textarea id="rep-description" class="form-control" rows="3" placeholder="Please describe what you observed at the station..." required></textarea>
+                    <textarea id="rep-description" class="form-control" rows="3" data-i18n-placeholder="descPlaceholder" placeholder="Please describe what you observed at the station..." required></textarea>
                 </div>
             </div>
 

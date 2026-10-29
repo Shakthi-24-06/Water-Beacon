@@ -149,7 +149,71 @@ const translations = {
         detailedDescription: "Detailed Description",
         statusOpen: "Open",
         statusInProgress: "In Progress",
-        statusCompleted: "Completed"
+        statusCompleted: "Completed",
+
+        // About Section
+        makingWater: "Making water",
+        accessEasier: "access easier.",
+        smartNetworkTitle: "Smart Village RO Network",
+        smartNetworkDesc: "Real-time status tracking, automated water telemetry, and transparent maintenance logs for public health and water accessibility.",
+        openCitizenTelemetry: "Open Citizen Telemetry",
+
+        // Footer
+        supportEmergency: "Support & Emergency",
+        dispensingHoursLabel: "Dispensing Hours:",
+        dispensingHoursTime: "6:00 AM – 9:00 PM Daily",
+        operatorAccessBtn: "Operator Access →",
+        backToTop: "Top",
+
+        // Hero Telemetry Badges
+        tdsPurityLabel: "TDS PURITY",
+        tankCapacityLabel: "TANK CAPACITY",
+
+        // Status Details & Telemetry
+        litersUnit: "Liters",
+        litersShort: "L",
+        inTankText: "in tank",
+        approxInTank: "Approx.",
+        defaultOperatorTitle: "Local Panchayat Operator",
+        mainRoadLoc: "Village Main Road",
+        justNow: "Just now",
+
+        // Stations Directory
+        noStationsMatch: "No stations match your filter",
+        tryAnotherSearch: "Try searching with another village name or clearing your status filter.",
+        resetFiltersBtn: "Reset Filters",
+
+        // Maintenance Section
+        allSystemsOperational: "All Systems Operational",
+        noOpenTickets: "No open maintenance tickets found for this filter.",
+        routineMaintenanceDesc: "Routine filtration check and maintenance procedure.",
+        assignedTechnician: "Assigned Technician",
+
+        // Modal Form Options & Placeholders
+        issueLowPressure: "Low Water Flow / Pressure Drop",
+        issueTasteOdor: "Strange Taste / High Salinity / Odor",
+        issueTapLeak: "Dispenser Tap Leakage / Spillage",
+        issueCardMachine: "Smart Card / Token Reader Error",
+        issuePowerOutage: "RO Station Power Failure",
+        issueOther: "Other Operational Issue",
+        namePlaceholder: "e.g. Ramesh Kumar",
+        phonePlaceholder: "e.g. 94420 00000",
+        descPlaceholder: "Please describe what you observed at the station...",
+        stateTamilNadu: "Tamil Nadu",
+        howItWorksLead: "Water Beacon helps you check your village RO water availability and purification quality before you leave home.",
+        brandWater: "Water",
+        brandBeacon: "Beacon",
+        avatarTN: "TN",
+        avatarRO: "RO",
+        toastSuccess: "Success",
+        toastError: "Error",
+        toastNotice: "Notice",
+        toastInfo: "Information",
+        submittingBtn: "Submitting...",
+        reportSuccessToast: "Report received. Local Panchayat maintenance team has been alerted.",
+        reportErrorToast: "Unable to submit report. Please check details and try again.",
+        statusRefreshedToast: "Water status refreshed with live server telemetry.",
+        notAvailable: "N/A"
     },
 
     ta: {
@@ -302,7 +366,71 @@ const translations = {
         detailedDescription: "விவரம்",
         statusOpen: "திறந்துள்ளது",
         statusInProgress: "நடைபெறுகிறது",
-        statusCompleted: "முடிக்கப்பட்டது"
+        statusCompleted: "முடிக்கப்பட்டது",
+
+        // About Section
+        makingWater: "குடிநீர் பெறுவதை",
+        accessEasier: "எளிதாக்குகிறது.",
+        smartNetworkTitle: "கிராமப்புற ஸ்மார்ட் RO கட்டமைப்பு",
+        smartNetworkDesc: "நேரடி நிலவர கண்காணிப்பு, தானியங்கி குடிநீர் அளவீடு மற்றும் வெளிப்படையான பராமரிப்பு பதிவுகள்.",
+        openCitizenTelemetry: "100% வெளிப்படையான நேரடி நிலவரம்",
+
+        // Footer
+        supportEmergency: "உதவி மற்றும் அவசர தொடர்பு",
+        dispensingHoursLabel: "குடிநீர் வழங்கும் நேரம்:",
+        dispensingHoursTime: "காலை 6:00 – இரவு 9:00 வரை",
+        operatorAccessBtn: "பணியாளர் தளம் →",
+        backToTop: "மேலே",
+
+        // Hero Telemetry Badges
+        tdsPurityLabel: "குடிநீர் தரம் (TDS)",
+        tankCapacityLabel: "தொட்டி கொள்ளளவு",
+
+        // Status Details & Telemetry
+        litersUnit: "லிட்டர்",
+        litersShort: "லி",
+        inTankText: "தொட்டியில் உள்ளது",
+        approxInTank: "தோராயமாக",
+        defaultOperatorTitle: "உள்ளூர் ஊராட்சி பணியாளர்",
+        mainRoadLoc: "கிராம முக்கிய சாலை",
+        justNow: "சமீபத்தில்",
+
+        // Stations Directory
+        noStationsMatch: "தேடலுக்குரிய நிலையங்கள் இல்லை",
+        tryAnotherSearch: "வேறு கிராமத்தின் பெயரை உள்ளிடவும் அல்லது வடிகட்டியை மாற்றவும்.",
+        resetFiltersBtn: "வடிகட்டியை மீட்டமை",
+
+        // Maintenance Section
+        allSystemsOperational: "அனைத்து இயந்திரங்களும் சீராக இயங்குகின்றன",
+        noOpenTickets: "தற்போது எந்த பராமரிப்பு பணிகளும் நிலுவையில் இல்லை.",
+        routineMaintenanceDesc: "வழக்கமான வடிகட்டி ஆய்வு மற்றும் பராமரிப்பு பணி.",
+        assignedTechnician: "தொழில்நுட்ப பணியாளர்",
+
+        // Modal Form Options & Placeholders
+        issueLowPressure: "குறைந்த நீர் அழுத்தம் / நீர் வரத்து குறைவு",
+        issueTasteOdor: "வித்தியாசமான சுவை / உப்புத்தன்மை / துர்நாற்றம்",
+        issueTapLeak: "குழாய் கசிவு / நீர் விரயம்",
+        issueCardMachine: "ஸ்மார்ட் கார்டு / டோக்கன் ரீடர் கோளாறு",
+        issuePowerOutage: "நிலையத்தில் மின்சார தடை",
+        issueOther: "இதர செயல்பாட்டு குறைபாடுகள்",
+        namePlaceholder: "எ.கா. ரமேஷ் குமார்",
+        phonePlaceholder: "எ.கா. 94420 00000",
+        descPlaceholder: "நிலையத்தில் நீங்கள் கவனித்த குறைபாட்டை விவரிக்கவும்...",
+        stateTamilNadu: "தமிழ்நாடு",
+        howItWorksLead: "வீட்டை விட்டு கிளம்புவதற்கு முன் கிராமத்தின் RO குடிநீர் இருப்பு மற்றும் தரத்தை எளிதாக அறிய உதவுகிறது.",
+        brandWater: "வாட்டர்",
+        brandBeacon: "பீக்கன்",
+        avatarTN: "த.நா",
+        avatarRO: "RO",
+        toastSuccess: "வெற்றி",
+        toastError: "பிழை",
+        toastNotice: "அறிவிப்பு",
+        toastInfo: "தகவல்",
+        submittingBtn: "சமர்ப்பிக்கப்படுகிறது...",
+        reportSuccessToast: "புகார் பெறப்பட்டது. உள்ளூர் ஊராட்சி பராமரிப்பு குழுவிற்கு தகவல் தெரிவிக்கப்பட்டுள்ளது.",
+        reportErrorToast: "புகாரை சமர்ப்பிக்க முடியவில்லை. விவரங்களை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
+        statusRefreshedToast: "நேரடி சேவையகத்திலிருந்து குடிநீர் நிலை வெற்றிகரமாக புதுப்பிக்கப்பட்டது.",
+        notAvailable: "இல்லை"
     }
 };
 
@@ -362,6 +490,190 @@ function getTranslation(key, fallback = "") {
 
 window.t = getTranslation;
 window.applyLanguage = applyLanguage;
+
+// Dynamic Telemetry Data Dictionaries for Tamil Localization
+const villageTranslations = {
+    ta: {
+        "Semmarikulam": "செம்மரிகுளம்",
+        "Srivaikuntam": "ஸ்ரீவைகுண்டம்",
+        "Tiruchendur": "திருச்செந்தூர்",
+        "Udangudi": "உடன்குடி",
+        "Authoor": "ஆத்தூர்",
+        "Kayalpattinam": "காயல்பட்டினம்",
+        "Nazareth": "நாசரேத்",
+        "Sathankulam": "சாத்தான்குளம்",
+        "Alwarthirunagari": "ஆழ்வார்திருநகரி"
+    }
+};
+
+const districtTranslations = {
+    ta: {
+        "Thoothukudi": "தூத்துக்குடி",
+        "Tirunelveli": "திருநெல்வேலி",
+        "Tenkasi": "தென்காசி",
+        "Kanniyakumari": "கன்னியாகுமரி",
+        "Madurai": "மதுரை"
+    }
+};
+
+const locationTranslations = {
+    ta: {
+        "Village Main Road": "கிராம முக்கிய சாலை",
+        "North Car Street": "வடக்கு ரத வீதி",
+        "Temple Car Street West": "மேற்கு ரத வீதி (கோவில் அருகில்)",
+        "Bazaar Street, Near Bus Stand": "பஜார் வீதி, பேருந்து நிலையம் அருகில்",
+        "Main Market Area": "முதன்மை சந்தைப் பகுதி",
+        "Coastal Road Junction": "கடற்கரை சாலை சந்திப்பு",
+        "Near Railway Feeder Road": "ரயில்வே இணைப்பு சாலை அருகில்",
+        "Panchayat Office Complex": "ஊராட்சி மன்ற வளாகம்",
+        "Main Road": "முக்கிய சாலை",
+        "Near Bus Stand": "பேருந்து நிலையம் அருகில்",
+        "Market Street": "சந்தை வீதி"
+    }
+};
+
+const machineTranslations = {
+    ta: {
+        "Main RO Water Machine": "முதன்மை RO குடிநீர் நிலையம்",
+        "Srivaikuntam Riverbank RO Plant": "ஸ்ரீவைகுண்டம் ஆற்றுப்படுகை RO நிலையம்",
+        "Tiruchendur Pilgrim RO Center": "திருச்செந்தூர் பக்தர்கள் RO மையம்",
+        "Udangudi Central RO Unit": "உடன்குடி மத்திய RO நிலையம்",
+        "Authoor Betel Leaf RO Facility": "ஆத்தூர் வெற்றிலைப் பகுதி RO நிலையம்",
+        "Kayalpattinam RO Station 1": "காயல்பட்டினம் RO நிலையம் 1",
+        "Nazareth Model RO Station": "நாசரேத் மாதிரி RO நிலையம்",
+        "Sathankulam Community RO Plant": "சாத்தான்குளம் சமூக RO சுத்திகரிப்பு நிலையம்",
+        "RO Machine": "RO குடிநீர் நிலையம்",
+        "RO Unit": "RO சுத்திகரிப்பு பிரிவு"
+    }
+};
+
+const operatorTranslations = {
+    ta: {
+        "Muthu K (Panchayat Operator)": "முத்து கே (ஊராட்சி பணியாளர்)",
+        "Muthu K": "முத்து கே",
+        "Suresh Kumar": "சுரேஷ் குமார்",
+        "Kannan V": "கண்ணன் வி",
+        "Selvam R": "செல்வம் ஆர்",
+        "Mariappan P": "மாரியப்பன் பி",
+        "Ahmed Bilal": "அஹ்மத் பிலால்",
+        "David Johnson": "டேவிட் ஜான்சன்",
+        "Murugan S": "முருகன் எஸ்",
+        "Unit Test Tech": "தொழில்நுட்ப பணியாளர்",
+        "Local Panchayat Operator": "உள்ளூர் ஊராட்சி பணியாளர்"
+    }
+};
+
+const issueTranslations = {
+    ta: {
+        "Filter Cleaning Test": "வடிகட்டி ஆய்வு சோதனை",
+        "Routine test verification of intake mesh": "வடிகட்டி வலை மற்றும் நீர் உறிஞ்சும் குழாய் ஆய்வு",
+        "Membrane Replacement": "RO சவ்வு (Membrane) மாற்றுதல்",
+        "Scheduled membrane replacement and chemical backwash": "திட்டமிடப்பட்ட சவ்வு மாற்றுதல் மற்றும் ரசாயன சுத்திகரிப்பு பணி",
+        "Pressure Booster Pump Servicing": "உயர் அழுத்த பூஸ்டர் பம்ப் பராமரிப்பு",
+        "Booster pump bearing lubrication and seal check": "பூஸ்டர் பம்ப் பேரிங் லூப்ரிகேஷன் மற்றும் சீல் ஆய்வு",
+        "UV Lamp Disinfection Check": "UV விளக்கு கிருமிநாசினி ஆய்வு",
+        "UV lamp intensity verification and chamber descaling": "UV விளக்கு ஒளித்திறன் மற்றும் சேம்பர் உப்பு நீக்கம்",
+        "TDS Calibration & Sensor Check": "TDS சென்சார் மற்றும் அளவீடு சோதனை",
+        "TDS probe recalibration and digital display sync": "TDS சென்சார் அளவீடு மற்றும் டிஜிட்டல் திரை ஒருங்கிணைப்பு",
+        "Low Water Flow / Pressure Drop": "குறைந்த நீர் அழுத்தம் / நீர் வரத்து குறைவு",
+        "Strange Taste / High Salinity / Odor": "வித்தியாசமான சுவை / உப்புத்தன்மை / துர்நாற்றம்",
+        "Dispenser Tap Leakage / Spillage": "குழாய் கசிவு / நீர் விரயம்",
+        "Smart Card / Token Reader Error": "ஸ்மார்ட் கார்டு / டோக்கன் ரீடர் கோளாறு",
+        "RO Station Power Failure": "நிலையத்தில் மின்சார தடை",
+        "Other Operational Issue": "இதர செயல்பாட்டு குறைபாடுகள்",
+        "Low Pressure": "குறைந்த நீர் அழுத்தம்",
+        "Water Taste or Odor": "சுவை அல்லது துர்நாற்றம்",
+        "Dispenser Tap Leak": "குழாய் கசிவு",
+        "Card Machine Down": "கார்டு மெஷின் கோளாறு",
+        "Station Power Outage": "மின்சார தடை",
+        "Other": "இதர குறைபாடு",
+        "Routine maintenance procedure.": "வழக்கமான வடிகட்டி ஆய்வு மற்றும் பராமரிப்பு பணி."
+    }
+};
+
+window.translateVillage = function(name) {
+    if (!name) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && villageTranslations.ta[name]) {
+        return villageTranslations.ta[name];
+    }
+    return name;
+};
+
+window.translateDistrict = function(district) {
+    if (!district) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && districtTranslations.ta[district]) {
+        return districtTranslations.ta[district];
+    }
+    return district;
+};
+
+window.translateLocation = function(loc) {
+    if (!loc) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && locationTranslations.ta[loc]) {
+        return locationTranslations.ta[loc];
+    }
+    return loc;
+};
+
+window.translateMachine = function(machine) {
+    if (!machine) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && machineTranslations.ta[machine]) {
+        return machineTranslations.ta[machine];
+    }
+    return machine;
+};
+
+window.translateOperator = function(op) {
+    if (!op) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && operatorTranslations.ta[op]) {
+        return operatorTranslations.ta[op];
+    }
+    return op;
+};
+
+window.translateIssue = function(issue) {
+    if (!issue) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && issueTranslations.ta[issue]) {
+        return issueTranslations.ta[issue];
+    }
+    return issue;
+};
+
+window.translateDescription = function(desc) {
+    if (!desc) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && issueTranslations.ta[desc]) {
+        return issueTranslations.ta[desc];
+    }
+    return desc;
+};
+
+window.translateState = function(state) {
+    if (!state) return "";
+    const lang = currentLanguage;
+    if (lang === "ta" && (state === "Tamil Nadu" || state === "TamilNadu")) {
+        return "தமிழ்நாடு";
+    }
+    return state;
+};
+
+window.getStatusLabel = function(status) {
+    const lang = currentLanguage || "en";
+    const map = {
+        AVAILABLE: translations[lang]?.waterAvailable || "Water Available",
+        OUT_OF_WATER: translations[lang]?.outOfWater || "Out of Water",
+        UNDER_MAINTENANCE: translations[lang]?.underMaintenance || "Under Maintenance",
+        REPAIR: translations[lang]?.underRepair || "Under Repair",
+        TEMPORARILY_CLOSED: translations[lang]?.temporarilyClosed || "Temporarily Closed"
+    };
+    return map[status] || status || translations[lang]?.unknown || "Unknown";
+};
 
 // Immediate root attribute setup
 document.documentElement.lang = currentLanguage;

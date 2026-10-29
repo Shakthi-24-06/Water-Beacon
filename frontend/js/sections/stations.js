@@ -19,6 +19,9 @@ async function initStations() {
     }
 
     function getStatusLabel(status) {
+        if (typeof window.getStatusLabel === "function") {
+            return window.getStatusLabel(status);
+        }
         const map = {
             AVAILABLE: t("waterAvailable", "Water Available"),
             OUT_OF_WATER: t("outOfWater", "Out of Water"),
@@ -72,10 +75,15 @@ async function initStations() {
 
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
-                const matchName = s.village_name?.toLowerCase().includes(q);
-                const matchDistrict = s.district?.toLowerCase().includes(q);
-                const matchMachine = s.machine_name?.toLowerCase().includes(q);
-                const matchLoc = s.location?.toLowerCase().includes(q);
+                const vNameTa = (typeof window.translateVillage === "function") ? window.translateVillage(s.village_name).toLowerCase() : "";
+                const distTa = (typeof window.translateDistrict === "function") ? window.translateDistrict(s.district).toLowerCase() : "";
+                const mNameTa = (typeof window.translateMachine === "function") ? window.translateMachine(s.machine_name).toLowerCase() : "";
+                const locTa = (typeof window.translateLocation === "function") ? window.translateLocation(s.location).toLowerCase() : "";
+
+                const matchName = s.village_name?.toLowerCase().includes(q) || vNameTa.includes(q);
+                const matchDistrict = s.district?.toLowerCase().includes(q) || distTa.includes(q);
+                const matchMachine = s.machine_name?.toLowerCase().includes(q) || mNameTa.includes(q);
+                const matchLoc = s.location?.toLowerCase().includes(q) || locTa.includes(q);
                 if (!matchName && !matchDistrict && !matchMachine && !matchLoc) return false;
             }
 
@@ -96,13 +104,19 @@ async function initStations() {
                 ? station.water_level_pct
                 : (station.status === "AVAILABLE" ? 85 : 0);
 
+            const vName = (typeof window.translateVillage === "function") ? window.translateVillage(station.village_name) : station.village_name;
+            const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(station.district) : station.district;
+            const stateName = (typeof window.translateState === "function") ? window.translateState(station.state) : (station.state || t("stateTamilNadu", "Tamil Nadu"));
+            const mName = (typeof window.translateMachine === "function") ? window.translateMachine(station.machine_name) : (station.machine_name || "RO Unit");
+            const loc = (typeof window.translateLocation === "function") ? window.translateLocation(station.location) : (station.location || t("mainRoadLoc", "Main Road"));
+
             return `
                 <div class="station-card">
                     <div>
                         <div class="station-card-top">
                             <div class="card-title-group">
-                                <h4>${station.village_name}</h4>
-                                <span>${station.district}, ${station.state || "Tamil Nadu"}</span>
+                                <h4>${vName}</h4>
+                                <span>${dist}, ${stateName}</span>
                             </div>
                             <span class="status-badge ${sClass}">
                                 <span class="indicator"></span>
@@ -111,7 +125,7 @@ async function initStations() {
                         </div>
 
                         <div class="station-card-machine">
-                            ${station.machine_name || "RO Unit"}
+                            ${mName}
                         </div>
 
                         <div class="station-card-loc">
@@ -119,13 +133,13 @@ async function initStations() {
                                 <path d="M12 21C16 17 19 14 19 10C19 6.134 15.866 3 12 3C8.134 3 5 6.134 5 10C5 14 8 17 12 21Z" stroke="currentColor" stroke-width="1.8"/>
                                 <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8"/>
                             </svg>
-                            <span>${station.location || "Main Road"}</span>
+                            <span>${loc}</span>
                         </div>
 
                         <!-- Tank Level Progress -->
                         <div class="card-level-progress-box">
                             <div class="card-progress-labels">
-                                <span></span>
+                                <span>${t("waterLevel", "Water Level")}</span>
                                 <strong>${level}% (${(station.tds_level || 110)} PPM)</strong>
                             </div>
                             <div class="progress-track">
