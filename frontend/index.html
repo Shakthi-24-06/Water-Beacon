@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Water Beacon - Real-time village RO drinking water availability, purity monitoring, and maintenance tracking for rural communities in Tamil Nadu.">
+    <meta name="theme-color" content="#087f8c">
+
+    <title>Water Beacon | Smart Community RO Water Availability & Purity Monitoring</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sections/navbar.css">
+    <link rel="stylesheet" href="css/sections/hero.css">
+    <link rel="stylesheet" href="css/sections/status.css">
+    <link rel="stylesheet" href="css/sections/stations.css">
+    <link rel="stylesheet" href="css/sections/maintenance.css">
+    <link rel="stylesheet" href="css/sections/how-it-works.css">
+    <link rel="stylesheet" href="css/sections/about.css">
+    <link rel="stylesheet" href="css/sections/footer.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+    <main>
+        <div id="hero"></div>
+        <div id="status"></div>
+        <div id="stations"></div>
+        <div id="maintenance"></div>
+        <div id="how-it-works"></div>
+        <div id="about"></div>
+    </main>
+
+    <div id="footer"></div>
+
+    <div id="modals"></div>
+
+    <script>
+        async function loadSection(elementId, file) {
+            const response = await fetch(file);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${file}`);
+            }
+            const html = await response.text();
+            const el = document.getElementById(elementId);
+            if (el) el.innerHTML = html;
+        }
+
+        async function loadScript(file) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src = file;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load script ${file}`));
+                document.body.appendChild(script);
+            });
+        }
+
+        async function loadPage() {
+            try {
+                // 1. Load HTML Sections
+                await loadSection("navbar", "sections/navbar.html");
+                await loadSection("hero", "sections/hero.html");
+                await loadSection("status", "sections/status.html");
+                await loadSection("stations", "sections/stations.html");
+                await loadSection("maintenance", "sections/maintenance.html");
+                await loadSection("how-it-works", "sections/how-it-works.html");
+                await loadSection("about", "sections/about.html");
+                await loadSection("footer", "sections/footer.html");
+                await loadSection("modals", "sections/modals.html");
+
+                // 2. Load Core Language Engine First
+                await loadScript("js/language.js");
+
+                // 3. Load Navbar
+                await loadScript("js/sections/navbar.js");
+                if (typeof initNavbar === "function") initNavbar();
+
+                // 4. Load Hero
+                await loadScript("js/sections/hero.js");
+                if (typeof initHero === "function") await initHero();
+
+                // 5. Load Status
+                await loadScript("js/sections/status.js");
+                if (typeof initStatus === "function") await initStatus();
+
+                // 6. Load Stations Explorer
+                await loadScript("js/sections/stations.js");
+                if (typeof initStations === "function") await initStations();
+
+                // 7. Load Maintenance Tracker
+                await loadScript("js/sections/maintenance.js");
+                if (typeof initMaintenance === "function") await initMaintenance();
+
+                // 8. Load App Orchestrator & Modal Handlers
+                await loadScript("js/app.js");
+                if (typeof initApp === "function") initApp();
+
+                // 9. Apply initial saved language across all loaded sections
+                if (typeof applyLanguage === "function") {
+                    const savedLang = localStorage.getItem("waterBeaconLanguage") || "en";
+                    applyLanguage(savedLang);
+                }
+
+            } catch (error) {
+                console.error("Page initialization failed:", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadPage);
+    </script>
+
+</body>
+</html>
