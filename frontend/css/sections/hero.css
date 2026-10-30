@@ -87,6 +87,7 @@ html[lang="ta"] .hero-content {
     color: var(--accent-teal);
     background: linear-gradient(135deg, #087f8c 0%, #0284c7 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -166,7 +167,7 @@ html[lang="ta"] .hero-description {
     min-width: 0;
     border: none;
     outline: none;
-    font-size: 14px;
+    font-size: 14.5px;
     color: var(--text-primary);
     background: transparent;
 }
@@ -176,15 +177,6 @@ html[lang="ta"] .hero-description {
     height: 22px;
     color: var(--text-muted);
     flex-shrink: 0;
-}
-
-.search-input-box input {
-    width: 100%;
-    border: none;
-    outline: none;
-    font-size: 14.5px;
-    color: var(--text-primary);
-    background: transparent;
 }
 
 .search-input-box input::placeholder {
