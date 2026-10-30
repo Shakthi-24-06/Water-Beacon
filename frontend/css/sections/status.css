@@ -517,3 +517,28 @@ html[lang="ta"] .tel-label {
         width: 100%;
     }
 }
+
+
+@media (max-width: 420px) {
+    .water-status-page {
+        padding: 60px 0;
+    }
+    .water-station {
+        padding: 20px 12px;
+        border-radius: var(--radius-lg);
+    }
+    .station-info h3 {
+        font-size: 22px;
+    }
+    .tank-area {
+        margin: 20px 0 28px;
+    }
+    .tank {
+        width: 140px;
+        height: 200px;
+    }
+    .tank-scale {
+        height: 190px;
+        font-size: 9.5px;
+    }
+}

@@ -394,3 +394,38 @@ html[lang="ta"] .nav-links a {
         height: 34px;
     }
 }
+
+
+@media (max-width: 380px) {
+    .nav-container {
+        width: calc(100% - 16px);
+        padding: 0 8px;
+        height: 54px;
+    }
+    .brand {
+        gap: 6px;
+    }
+    .brand-text {
+        font-size: 15px;
+    }
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+    }
+    .brand-icon svg {
+        width: 19px;
+        height: 19px;
+    }
+    .language-btn {
+        padding: 4px 6px;
+        font-size: 11px;
+        height: 32px;
+    }
+    .language-btn .arrow-icon {
+        display: none;
+    }
+    .mobile-menu-btn {
+        width: 32px;
+        height: 32px;
+    }
+}

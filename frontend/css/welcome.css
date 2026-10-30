@@ -684,21 +684,37 @@
 @media (max-width: 1024px) {
     .access-cards-grid {
         gap: 24px;
+        max-width: 820px;
     }
     .why-features-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 768px) {
-    .welcome-hero {
-        padding: 40px 16px 28px;
-    }
+@media (max-width: 840px) {
     .access-cards-grid {
         grid-template-columns: 1fr;
+        max-width: 520px;
         gap: 24px;
-        padding: 0 16px;
+        padding: 0 20px;
         margin-bottom: 48px;
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome-header-container {
+        padding: 0 16px;
+    }
+    .welcome-hero {
+        padding: clamp(32px, 6vw, 44px) 16px 24px;
+    }
+    .welcome-heading {
+        font-size: clamp(26px, 6vw, 36px);
+        margin-bottom: 14px;
+    }
+    .welcome-subheading {
+        font-size: clamp(14.5px, 3.8vw, 17px);
+        margin-bottom: 24px;
     }
     .steps-grid {
         grid-template-columns: 1fr;
@@ -711,23 +727,77 @@
     .welcome-footer-top,
     .welcome-footer-bottom {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
     }
     .welcome-footer-links {
         gap: 16px;
     }
 }
 
-@media (max-width: 390px) {
-    .access-card {
-        padding: 28px 20px;
+@media (max-width: 480px) {
+    .welcome-header {
+        padding: 10px 0;
     }
-    .welcome-heading {
-        font-size: 28px;
+    .welcome-header-container {
+        padding: 0 12px;
+    }
+    .welcome-brand {
+        gap: 8px;
+    }
+    .welcome-brand-title {
+        font-size: 17px;
+    }
+    .brand-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+    .welcome-lang-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    .access-cards-grid {
+        padding: 0 14px;
+        margin-bottom: 36px;
+    }
+    .access-card {
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+    .card-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        margin-bottom: 14px;
+    }
+    .card-header-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    .access-card-title {
+        font-size: 21px;
+    }
+    .access-card-desc {
+        font-size: 13.5px;
+        margin-bottom: 20px;
     }
     .btn-access {
-        font-size: 15px;
         padding: 13px 18px;
+        font-size: 14.5px;
+        min-height: 46px;
+    }
+}
+
+@media (max-width: 360px) {
+    .welcome-brand-sub {
+        display: none;
+    }
+    .access-card {
+        padding: 20px 14px;
+    }
+    .welcome-heading {
+        font-size: 23px;
     }
 }
 

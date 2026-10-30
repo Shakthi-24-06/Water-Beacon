@@ -7,8 +7,14 @@ async function initMaintenance() {
     const countActive = document.getElementById("maint-count-active");
     const countCompleted = document.getElementById("maint-count-completed");
 
+    const viewAllContainer = document.getElementById("maint-view-all-container");
+    const viewAllBtn = document.getElementById("btn-maint-view-all");
+    const viewAllText = document.getElementById("btn-maint-view-all-text");
+    const viewAllBadge = document.getElementById("maint-total-badge");
+
     let allRecords = [];
     let currentTab = "ALL";
+    let showAllLogs = false; // default: false (show only top recent log)
 
     function t(key, fallback = "") {
         return (typeof window.t === "function") ? window.t(key, fallback) : fallback || key;
@@ -59,10 +65,37 @@ async function initMaintenance() {
         if (filtered.length === 0) {
             tbody.innerHTML = "";
             if (emptyEl) emptyEl.style.display = "block";
+            if (viewAllContainer) viewAllContainer.style.display = "none";
             return;
         }
 
         if (emptyEl) emptyEl.style.display = "none";
+
+        // View All Toggle Controls
+        if (viewAllContainer) {
+            if (filtered.length <= 1) {
+                viewAllContainer.style.display = "none";
+            } else {
+                viewAllContainer.style.display = "flex";
+                if (showAllLogs) {
+                    viewAllBtn?.classList.add("expanded");
+                    viewAllBtn?.setAttribute("aria-expanded", "true");
+                    if (viewAllText) viewAllText.textContent = t("showRecentMaintOnly", "Show Recent Record Only");
+                    if (viewAllBadge) viewAllBadge.style.display = "none";
+                } else {
+                    viewAllBtn?.classList.remove("expanded");
+                    viewAllBtn?.setAttribute("aria-expanded", "false");
+                    if (viewAllText) viewAllText.textContent = t("viewAllMaintRecords", "View All Maintenance Records");
+                    if (viewAllBadge) {
+                        viewAllBadge.textContent = filtered.length;
+                        viewAllBadge.style.display = "inline-block";
+                    }
+                }
+            }
+        }
+
+        // Show top 1 recent log unless user clicked 'View All'
+        const recordsToDisplay = showAllLogs ? filtered : filtered.slice(0, 1);
 
         const statusMap = {
             OPEN: t("statusOpen", "Open"),
@@ -70,7 +103,7 @@ async function initMaintenance() {
             COMPLETED: t("statusCompleted", "Completed")
         };
 
-        tbody.innerHTML = filtered.map(rec => {
+        tbody.innerHTML = recordsToDisplay.map(rec => {
             const sClass = (rec.status || "OPEN").toLowerCase().replace(/_/g, "-");
             const localizedStatus = statusMap[rec.status] || rec.status;
             const vName = (typeof window.translateVillage === "function") ? window.translateVillage(rec.village_name) : (rec.village_name || "Village");
@@ -126,11 +159,20 @@ async function initMaintenance() {
         return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     }
 
+    // Toggle button click listener
+    if (viewAllBtn) {
+        viewAllBtn.onclick = () => {
+            showAllLogs = !showAllLogs;
+            renderTable();
+        };
+    }
+
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             tabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
             currentTab = tab.getAttribute("data-tab");
+            showAllLogs = false; // Reset to top recent log on tab switch
             renderTable();
         });
     });

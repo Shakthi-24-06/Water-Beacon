@@ -61,6 +61,17 @@
                 <h4 data-i18n="allSystemsOperational">All Systems Operational</h4>
                 <p data-i18n="noOpenTickets">No open maintenance tickets found for this filter.</p>
             </div>
+
+            <!-- View All Toggle Footer -->
+            <div class="maintenance-card-footer" id="maint-view-all-container" style="display: none;">
+                <button type="button" class="btn-maint-view-all" id="btn-maint-view-all" aria-expanded="false">
+                    <span id="btn-maint-view-all-text" data-i18n="viewAllMaintRecords">View All Maintenance Records</span>
+                    <span class="btn-maint-badge" id="maint-total-badge" style="display: none;">0</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="btn-maint-view-all-icon">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
     </div>
