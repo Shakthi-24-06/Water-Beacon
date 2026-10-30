@@ -35,5 +35,6 @@ ssl_explicit_off = os.environ.get("DB_SSL", "").lower() in ["false", "0", "off",
 
 if (is_remote_host or os.environ.get("DB_SSL", "").lower() in ["true", "1", "required"]) and not ssl_explicit_off:
     DB_CONFIG["ssl_disabled"] = False
+    DB_CONFIG["ssl_verify_identity"] = False
     if os.environ.get("DB_SSL_CA"):
         DB_CONFIG["ssl_ca"] = os.environ.get("DB_SSL_CA")
