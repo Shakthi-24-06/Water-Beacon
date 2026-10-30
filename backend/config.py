@@ -1,13 +1,13 @@
 import os
 from urllib.parse import urlparse
 
-# Default database configuration with environment variable support
+# Default database configuration with environment variable support (supports DB_*, TIDB_*, and DATABASE_URL)
 DB_CONFIG = {
-    "host": os.environ.get("DB_HOST", "localhost"),
-    "user": os.environ.get("DB_USER", "root"),
-    "password": os.environ.get("DB_PASSWORD", "WaterDB@2026"),
-    "database": os.environ.get("DB_NAME", os.environ.get("DB_DATABASE", "smart_ro_water_system")),
-    "port": int(os.environ.get("DB_PORT", 3306)),
+    "host": os.environ.get("DB_HOST") or os.environ.get("TIDB_HOST") or "localhost",
+    "user": os.environ.get("DB_USER") or os.environ.get("TIDB_USER") or "root",
+    "password": os.environ.get("DB_PASSWORD") or os.environ.get("TIDB_PASSWORD") or "WaterDB@2026",
+    "database": os.environ.get("DB_NAME") or os.environ.get("DB_DATABASE") or os.environ.get("TIDB_DATABASE") or "smart_ro_water_system",
+    "port": int(os.environ.get("DB_PORT") or os.environ.get("TIDB_PORT") or 3306),
     "connect_timeout": int(os.environ.get("DB_CONNECT_TIMEOUT", 5))
 }
 
