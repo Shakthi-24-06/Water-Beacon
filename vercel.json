@@ -1,0 +1,66 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/css/(.*)",
+      "destination": "/frontend/css/$1"
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": "/frontend/js/$1"
+    },
+    {
+      "source": "/sections/(.*)",
+      "destination": "/frontend/sections/$1"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": "/frontend/favicon.svg"
+    },
+    {
+      "source": "/welcome",
+      "destination": "/frontend/welcome.html"
+    },
+    {
+      "source": "/public",
+      "destination": "/frontend/public.html"
+    },
+    {
+      "source": "/home",
+      "destination": "/frontend/public.html"
+    },
+    {
+      "source": "/operator",
+      "destination": "/frontend/operator.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/frontend/operator.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/frontend/operator.html"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/welcome.html"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    }
+  ]
+}
