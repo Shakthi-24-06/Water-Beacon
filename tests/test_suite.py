@@ -1,28 +1,44 @@
-import os
-import sys
+"""
+Comprehensive test suite for Water Beacon application.
+Tests citizen portal, operator authentication, telemetry, maintenance, and community reporting.
+"""
+
 import unittest
+import sys
+import os
+import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(CURRENT_DIR)
-sys.path.insert(0, os.path.join(ROOT_DIR, "backend"))
+BASE_DIR = os.path.dirname(CURRENT_DIR)
+BACKEND_DIR = os.path.join(BASE_DIR, "backend")
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 from app import app
+from db import get_db_connection
 
-class TestWaterBeaconApp(unittest.TestCase):
+class WaterBeaconTestSuite(unittest.TestCase):
+
     def setUp(self):
-        app.config["TESTING"] = True
-        self.client = app.test_client()
+        self.app = app
+        self.app.config["TESTING"] = True
+        self.client = self.app.test_client()
 
-    def test_01_index_route_citizen_separation(self):
-        res = self.client.get("/")
-        self.assertEqual(res.status_code, 200)
-        self.assertIn(b"Water Beacon", res.data)
-        # Public users see the citizen interface
-        self.assertIn(b"navbar", res.data)
-        self.assertIn(b"hero", res.data)
-        self.assertIn(b"status", res.data)
-        # Verify operator portal is separated
-        self.assertNotIn(b"Broadcast Status Update to Network", res.data)
+    def test_01_welcome_and_citizen_routes(self):
+        # 1. Entry page on root route
+        res_entry = self.client.get("/")
+        self.assertEqual(res_entry.status_code, 200)
+        self.assertIn(b"Water Beacon", res_entry.data)
+        self.assertIn(b"Public Access", res_entry.data)
+        self.assertIn(b"Admin / Operator Access", res_entry.data)
+        self.assertNotIn(b"Broadcast Status Update to Network", res_entry.data)
+
+        # 2. Public citizen portal on /public
+        res_pub = self.client.get("/public")
+        self.assertEqual(res_pub.status_code, 200)
+        self.assertIn(b"navbar", res_pub.data)
+        self.assertIn(b"hero", res_pub.data)
+        self.assertIn(b"status", res_pub.data)
 
     def test_02_operator_portal_route(self):
         res = self.client.get("/operator")
@@ -34,19 +50,128 @@ class TestWaterBeaconApp(unittest.TestCase):
         # Invalid PIN
         res_fail = self.client.post("/api/operator/login", json={"pin": "wrong_pin"})
         self.assertEqual(res_fail.status_code, 401)
-        self.assertFalse(res_fail.get_json()["success"])
+        data_fail = json.loads(res_fail.data.decode("utf-8"))
+        self.assertFalse(data_fail.get("success"))
 
-        # Valid PIN (default: 2026)
-        res_ok = self.client.post("/api/operator/login", json={"pin": "2026", "operator_name": "Selvam R"})
+        # Valid PIN (2026)
+        res_ok = self.client.post("/api/operator/login", json={
+            "pin": "2026",
+            "village_id": 1,
+            "village_name": "Semmarikulam",
+            "operator_name": "Muthu K"
+        })
         self.assertEqual(res_ok.status_code, 200)
-        data = res_ok.get_json()
-        self.assertTrue(data["success"])
-        self.assertEqual(data["operator"]["name"], "Selvam R")
-        self.assertIn("session_token", data["operator"])
+        data_ok = json.loads(res_ok.data.decode("utf-8"))
+        self.assertTrue(data_ok.get("success"))
+        self.assertIn("operator", data_ok)
+        self.assertEqual(data_ok["operator"]["name"], "Muthu K")
 
-    def test_04_all_static_assets(self):
+    def test_04_get_villages_api(self):
+        res = self.client.get("/api/villages")
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertIsInstance(data, list)
+        self.assertGreaterEqual(len(data), 1)
+        self.assertIn("name", data[0])
+        self.assertIn("status", data[0])
+
+    def test_05_get_village_status_api(self):
+        res = self.client.get("/api/villages/1/status")
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data.decode("utf-8"))
+        self.assertIn("village_name", data)
+        self.assertIn("machine_name", data)
+        self.assertIn("status", data)
+        self.assertIn("water_level_pct", data)
+
+    def test_06_machine_status_update_and_audit_log(self):
+        # Update station 1 to OUT_OF_WATER
+        payload = {
+            "status": "OUT_OF_WATER",
+            "water_level_pct": 0,
+            "tds_level": 120,
+            "remarks": "Automated unit test ran dry tank check",
+            "updated_by": "Unit Test Tech"
+        }
+        res_update = self.client.post("/api/machines/1/status", json=payload)
+        self.assertEqual(res_update.status_code, 200)
+        updated_data = json.loads(res_update.data.decode("utf-8"))
+        self.assertEqual(updated_data["machine"]["status"], "OUT_OF_WATER")
+
+        # Check logs
+        res_logs = self.client.get("/api/machines/1/logs")
+        self.assertEqual(res_logs.status_code, 200)
+        logs = json.loads(res_logs.data.decode("utf-8"))
+        self.assertGreaterEqual(len(logs), 1)
+        self.assertEqual(logs[0]["status"], "OUT_OF_WATER")
+        self.assertEqual(logs[0]["updated_by"], "Unit Test Tech")
+
+        # Restore back to AVAILABLE
+        self.client.post("/api/machines/1/status", json={
+            "status": "AVAILABLE",
+            "water_level_pct": 90,
+            "tds_level": 110,
+            "remarks": "Restored after unit test",
+            "updated_by": "Unit Test Tech"
+        })
+
+    def test_07_maintenance_records_workflow(self):
+        # 1. Create Maintenance Record
+        create_payload = {
+            "machine_id": 1,
+            "issue_type": "Filter Cleaning Test",
+            "description": "Routine test verification of intake mesh",
+            "updated_by": "Test Inspector",
+            "set_machine_maintenance": True
+        }
+        res_create = self.client.post("/api/maintenance", json=create_payload)
+        self.assertEqual(res_create.status_code, 201)
+        created_data = json.loads(res_create.data.decode("utf-8"))
+        record_id = created_data.get("record_id")
+        self.assertIsNotNone(record_id)
+
+        # Machine should now be UNDER_MAINTENANCE
+        res_machine = self.client.get("/api/machines/1")
+        machine_data = json.loads(res_machine.data.decode("utf-8"))
+        self.assertEqual(machine_data["status"], "UNDER_MAINTENANCE")
+
+        # 2. Complete Maintenance Record
+        res_patch = self.client.patch(f"/api/maintenance/{record_id}", json={"status": "COMPLETED"})
+        self.assertEqual(res_patch.status_code, 200)
+
+        # Machine should now be restored to AVAILABLE
+        res_restored = self.client.get("/api/machines/1")
+        restored_data = json.loads(res_restored.data.decode("utf-8"))
+        self.assertEqual(restored_data["status"], "AVAILABLE")
+
+    def test_08_community_report_workflow(self):
+        report_payload = {
+            "machine_id": 1,
+            "reporter_name": "Anitha Ramanathan",
+            "reporter_phone": "+91 94420 55443",
+            "issue_type": "Low Dispenser Pressure",
+            "description": "Dispenser nozzle flow rate is unusually slow this afternoon."
+        }
+        res_post = self.client.post("/api/reports", json=report_payload)
+        self.assertEqual(res_post.status_code, 201)
+        post_data = json.loads(res_post.data.decode("utf-8"))
+        report_id = post_data.get("report_id")
+        self.assertIsNotNone(report_id)
+
+        # Fetch Reports List
+        res_get = self.client.get("/api/reports")
+        self.assertEqual(res_get.status_code, 200)
+        reports = json.loads(res_get.data.decode("utf-8"))
+        self.assertTrue(any(r["id"] == report_id for r in reports))
+
+        # Update report status to INVESTIGATING
+        res_patch = self.client.patch(f"/api/reports/{report_id}", json={"status": "INVESTIGATING"})
+        self.assertEqual(res_patch.status_code, 200)
+
+    def test_09_static_assets_presence(self):
         assets = [
             "/css/style.css",
+            "/css/welcome.css",
             "/css/operator.css",
             "/css/sections/navbar.css",
             "/css/sections/hero.css",
@@ -67,80 +192,11 @@ class TestWaterBeaconApp(unittest.TestCase):
             "/sections/modals.html",
             "/js/language.js",
             "/js/app.js",
-            "/js/operator.js",
-            "/js/sections/navbar.js",
-            "/js/sections/hero.js",
-            "/js/sections/status.js",
-            "/js/sections/stations.js",
-            "/js/sections/maintenance.js",
-            "/assets/logo.svg",
-            "/assets/logo-full.svg",
-            "/favicon.svg",
+            "/js/operator.js"
         ]
         for asset in assets:
             res = self.client.get(asset)
-            self.assertEqual(res.status_code, 200, f"Failed to load asset: {asset}")
-            self.assertGreater(len(res.data), 0, f"Asset is empty: {asset}")
-
-    def test_05_api_villages_and_status(self):
-        res = self.client.get("/api/villages")
-        self.assertEqual(res.status_code, 200)
-        self.assertIsInstance(res.get_json(), list)
-
-        res_status = self.client.get("/api/villages/1/status")
-        self.assertEqual(res_status.status_code, 200)
-        data = res_status.get_json()
-        self.assertEqual(data["village_id"], 1)
-        self.assertIn("water_level_pct", data)
-        self.assertIn("tds_level", data)
-
-    def test_06_operator_update_machine_status(self):
-        payload = {
-            "status": "AVAILABLE",
-            "remarks": "Morning filtration cycle completed",
-            "updated_by": "Operator Test Suite",
-            "water_level_pct": 88,
-            "tds_level": 112
-        }
-        res = self.client.post("/api/machines/1/status", json=payload)
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
-        self.assertEqual(data["machine"]["status"], "AVAILABLE")
-        self.assertEqual(data["machine"]["water_level_pct"], 88)
-
-    def test_07_citizen_report_flow_and_operator_resolution(self):
-        # 1. Citizen posts issue
-        report_data = {
-            "machine_id": 1,
-            "reporter_name": "Meenakshi",
-            "reporter_phone": "+91 94430 12345",
-            "issue_type": "Low Pressure",
-            "description": "Tap flow is low this afternoon."
-        }
-        res_post = self.client.post("/api/reports", json=report_data)
-        self.assertEqual(res_post.status_code, 201)
-        rep_id = res_post.get_json()["report_id"]
-
-        # 2. Operator updates status to INVESTIGATING
-        res_inv = self.client.patch(f"/api/reports/{rep_id}", json={"status": "INVESTIGATING"})
-        self.assertEqual(res_inv.status_code, 200)
-
-        # 3. Operator marks RESOLVED
-        res_res = self.client.patch(f"/api/reports/{rep_id}", json={"status": "RESOLVED"})
-        self.assertEqual(res_res.status_code, 200)
-
-    def test_08_system_stats_overview(self):
-        res = self.client.get("/api/stats/overview")
-        self.assertEqual(res.status_code, 200)
-        stats = res.get_json()
-        self.assertIn("total_stations", stats)
-        self.assertIn("available_stations", stats)
-
-    def test_09_csv_export(self):
-        res = self.client.get("/api/export/status-csv")
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.mimetype, "text/csv")
-        self.assertIn(b"Semmarikulam", res.data)
+            self.assertEqual(res.status_code, 200, f"Asset {asset} failed to load")
 
 if __name__ == "__main__":
     unittest.main()

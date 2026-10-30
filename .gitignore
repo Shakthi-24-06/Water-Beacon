@@ -29,3 +29,8 @@ Desktop.ini
 # Uploads and temporary data
 uploads/*
 !uploads/.gitkeep
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3

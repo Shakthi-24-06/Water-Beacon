@@ -76,8 +76,23 @@ CREATE TABLE IF NOT EXISTS `community_reports` (
   `issue_type` VARCHAR(100) NOT NULL,
   `description` TEXT,
   `status` ENUM('PENDING','INVESTIGATING','RESOLVED') DEFAULT 'PENDING',
-  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `machine_id` (`machine_id`),
   CONSTRAINT `community_reports_ibfk_1` FOREIGN KEY (`machine_id`) REFERENCES `ro_machines` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 6. Users & Operators Table (Admin & Field Operators)
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `password_hash` VARCHAR(255) NOT NULL,
+  `full_name` VARCHAR(100) NOT NULL,
+  `role` ENUM('ADMIN', 'OPERATOR') NOT NULL DEFAULT 'OPERATOR',
+  `phone` VARCHAR(50) DEFAULT NULL,
+  `assigned_village_id` INT DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `assigned_village_id` (`assigned_village_id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`assigned_village_id`) REFERENCES `villages` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

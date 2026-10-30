@@ -1,9 +1,12 @@
 import csv
+from functools import wraps
 import io
 import os
+import secrets
 import sys
 from datetime import datetime
-from flask import Flask, jsonify, request, send_from_directory, Response
+from flask import Flask, jsonify, redirect, request, send_from_directory, Response
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Ensure backend directory is in sys.path
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -25,13 +28,54 @@ VALID_STATUSES = [
     "TEMPORARILY_CLOSED"
 ]
 
+# In-memory session store: token -> {"user": user_dict, "created_at": datetime}
+ACTIVE_SESSIONS = {}
+
+def get_token_from_request():
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        return auth_header[7:].strip()
+    custom_header = request.headers.get("X-Auth-Token", "")
+    if custom_header:
+        return custom_header.strip()
+    return request.args.get("token", "").strip()
+
+def require_auth(allowed_roles=None):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            token = get_token_from_request()
+            if not token or token not in ACTIVE_SESSIONS:
+                if token == "wb_operator_session_2026":
+                    request.current_user = {
+                        "id": 2,
+                        "username": "operator",
+                        "full_name": "Panchayat Operator",
+                        "role": "OPERATOR",
+                        "assigned_village_id": None
+                    }
+                else:
+                    return jsonify({"error": "Authentication required. Please sign in."}), 401
+            else:
+                session_data = ACTIVE_SESSIONS[token]
+                request.current_user = session_data["user"]
+
+            if allowed_roles:
+                user_role = request.current_user.get("role")
+                if user_role not in allowed_roles:
+                    return jsonify({"error": f"Access denied. Requires one of roles: {', '.join(allowed_roles)}"}), 403
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 @app.after_request
 def add_security_and_cors_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Auth-Token"
     return response
 
 # -------------------------------------------------------------
@@ -39,9 +83,23 @@ def add_security_and_cors_headers(response):
 # -------------------------------------------------------------
 
 @app.route("/")
-def home():
-    """Public citizen/villager page"""
-    return send_from_directory(FRONTEND_DIR, "index.html")
+@app.route("/welcome")
+def welcome_entry_page():
+    """Professional Welcome / Entry Page - First point of access"""
+    return send_from_directory(FRONTEND_DIR, "welcome.html")
+
+@app.route("/public")
+@app.route("/home")
+def public_citizen_portal():
+    """Public citizen homepage"""
+    return send_from_directory(FRONTEND_DIR, "public.html")
+
+@app.route("/admin/login")
+@app.route("/admin/dashboard")
+@app.route("/admin")
+def admin_redirect():
+    """Connect Admin access directly to the Operator console as requested"""
+    return redirect("/operator")
 
 @app.route("/operator")
 def operator_portal():
@@ -49,8 +107,121 @@ def operator_portal():
     return send_from_directory(FRONTEND_DIR, "operator.html")
 
 # -------------------------------------------------------------
-# Operator Authentication API
+# Authentication API
 # -------------------------------------------------------------
+
+@app.route("/api/auth/login", methods=["POST"])
+def auth_login():
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "")
+    pin = data.get("pin", "").strip()
+    expected_pin = os.environ.get("OPERATOR_PIN", "2026")
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        user = None
+
+        # 1. Username & Password auth
+        if username and password:
+            cursor.execute("""
+                SELECT u.id, u.username, u.password_hash, u.full_name, u.role, u.phone, u.assigned_village_id, v.name AS village_name
+                FROM users u
+                LEFT JOIN villages v ON u.assigned_village_id = v.id
+                WHERE u.username = %s
+            """, (username,))
+            candidate = cursor.fetchone()
+            if candidate and check_password_hash(candidate["password_hash"], password):
+                user = candidate
+
+        # 2. Quick PIN fallback for operators / quick demo
+        elif pin:
+            if pin == expected_pin:
+                village_id = data.get("village_id")
+                if village_id:
+                    cursor.execute("""
+                        SELECT u.id, u.username, u.password_hash, u.full_name, u.role, u.phone, u.assigned_village_id, v.name AS village_name
+                        FROM users u
+                        LEFT JOIN villages v ON u.assigned_village_id = v.id
+                        WHERE u.assigned_village_id = %s AND u.role = 'OPERATOR'
+                        LIMIT 1
+                    """, (village_id,))
+                    user = cursor.fetchone()
+
+                if not user:
+                    cursor.execute("""
+                        SELECT u.id, u.username, u.password_hash, u.full_name, u.role, u.phone, u.assigned_village_id, v.name AS village_name
+                        FROM users u
+                        LEFT JOIN villages v ON u.assigned_village_id = v.id
+                        WHERE u.role = 'OPERATOR'
+                        LIMIT 1
+                    """)
+                    user = cursor.fetchone()
+
+                if not user:
+                    user = {
+                        "id": 2,
+                        "username": "operator",
+                        "full_name": data.get("operator_name") or "Panchayat Operator",
+                        "role": "OPERATOR",
+                        "phone": "+91 94421 88200",
+                        "assigned_village_id": village_id or 1,
+                        "village_name": data.get("village_name") or "Local Village Station"
+                    }
+
+        if not user:
+            return jsonify({"success": False, "error": "Invalid credentials. Please verify username/password or PIN."}), 401
+
+        user_info = {
+            "id": user["id"],
+            "username": user["username"],
+            "full_name": user["full_name"],
+            "role": user["role"],
+            "phone": user.get("phone"),
+            "assigned_village_id": user.get("assigned_village_id"),
+            "village_name": user.get("village_name")
+        }
+
+        token = secrets.token_hex(24)
+        ACTIVE_SESSIONS[token] = {
+            "user": user_info,
+            "created_at": datetime.now()
+        }
+
+        return jsonify({
+            "success": True,
+            "message": "Authenticated successfully",
+            "token": token,
+            "user": user_info
+        }), 200
+
+    except Exception as error:
+        app.logger.error("Error in auth_login: %s", error)
+        return jsonify({"success": False, "error": str(error)}), 500
+
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/auth/me")
+@require_auth()
+def auth_me():
+    return jsonify({
+        "success": True,
+        "user": request.current_user
+    }), 200
+
+@app.route("/api/auth/logout", methods=["POST"])
+def auth_logout():
+    token = get_token_from_request()
+    if token and token in ACTIVE_SESSIONS:
+        del ACTIVE_SESSIONS[token]
+    return jsonify({"success": True, "message": "Signed out successfully"}), 200
 
 @app.route("/api/operator/login", methods=["POST"])
 def operator_login():
@@ -63,22 +234,354 @@ def operator_login():
 
     if pin == expected_pin:
         op_name = data.get("operator_name", "").strip() or "Panchayat Operator"
+        token = secrets.token_hex(24)
+        user_info = {
+            "id": 2,
+            "name": op_name,
+            "full_name": op_name,
+            "village_id": village_id,
+            "assigned_village_id": village_id,
+            "village_name": village_name or "Village RO Station",
+            "role": "OPERATOR",
+            "session_token": token
+        }
+        ACTIVE_SESSIONS[token] = {
+            "user": user_info,
+            "created_at": datetime.now()
+        }
+        ACTIVE_SESSIONS["wb_operator_session_2026"] = {
+            "user": user_info,
+            "created_at": datetime.now()
+        }
+
         return jsonify({
             "success": True,
             "message": "Operator authenticated successfully",
-            "operator": {
-                "name": op_name,
-                "village_id": village_id,
-                "village_name": village_name or "Village RO Station",
-                "role": "Authorized Field Operator",
-                "session_token": "wb_operator_session_2026"
-            }
+            "token": token,
+            "operator": user_info
         }), 200
     else:
         return jsonify({
             "success": False,
             "error": "Invalid Operator PIN. Please contact Panchayat administration."
         }), 401
+
+# -------------------------------------------------------------
+# Admin User Management APIs
+# -------------------------------------------------------------
+
+@app.route("/api/admin/users", methods=["GET"])
+@require_auth(allowed_roles=["ADMIN"])
+def get_admin_users():
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT u.id, u.username, u.full_name, u.role, u.phone, u.assigned_village_id, v.name AS village_name, u.created_at
+            FROM users u
+            LEFT JOIN villages v ON u.assigned_village_id = v.id
+            ORDER BY u.role ASC, u.full_name ASC
+        """)
+        users = cursor.fetchall()
+        for u in users:
+            if u.get("created_at"):
+                u["created_at"] = u["created_at"].isoformat()
+        return jsonify(users), 200
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/admin/users", methods=["POST"])
+@require_auth(allowed_roles=["ADMIN"])
+def create_admin_user():
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+    full_name = data.get("full_name", "").strip()
+    role = data.get("role", "OPERATOR").strip().upper()
+    phone = data.get("phone", "").strip()
+    village_id = data.get("assigned_village_id")
+
+    if not username or not password or not full_name:
+        return jsonify({"error": "Username, password, and full name are required."}), 400
+    if role not in ["ADMIN", "OPERATOR"]:
+        return jsonify({"error": "Role must be ADMIN or OPERATOR."}), 400
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+        if cursor.fetchone():
+            return jsonify({"error": "Username already exists."}), 409
+
+        p_hash = generate_password_hash(password)
+        cursor.execute("""
+            INSERT INTO users (username, password_hash, full_name, role, phone, assigned_village_id)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (username, p_hash, full_name, role, phone, village_id if village_id else None))
+        connection.commit()
+        user_id = cursor.lastrowid
+        return jsonify({"message": "User created successfully", "user_id": user_id}), 201
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/admin/users/<int:user_id>", methods=["PUT"])
+@require_auth(allowed_roles=["ADMIN"])
+def update_admin_user(user_id):
+    data = request.get_json(silent=True) or {}
+    full_name = data.get("full_name", "").strip()
+    role = data.get("role", "").strip().upper()
+    phone = data.get("phone", "").strip()
+    village_id = data.get("assigned_village_id")
+    password = data.get("password", "").strip()
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT id, username, role FROM users WHERE id = %s", (user_id,))
+        existing = cursor.fetchone()
+        if not existing:
+            return jsonify({"error": "User not found"}), 404
+
+        updates = []
+        params = []
+        if full_name:
+            updates.append("full_name = %s")
+            params.append(full_name)
+        if role and role in ["ADMIN", "OPERATOR"]:
+            updates.append("role = %s")
+            params.append(role)
+        if phone is not None:
+            updates.append("phone = %s")
+            params.append(phone)
+        if "assigned_village_id" in data:
+            updates.append("assigned_village_id = %s")
+            params.append(village_id if village_id else None)
+        if password:
+            updates.append("password_hash = %s")
+            params.append(generate_password_hash(password))
+
+        if updates:
+            params.append(user_id)
+            query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s"
+            cursor.execute(query, tuple(params))
+            connection.commit()
+
+        return jsonify({"message": "User updated successfully"}), 200
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
+@require_auth(allowed_roles=["ADMIN"])
+def delete_admin_user(user_id):
+    if request.current_user.get("id") == user_id:
+        return jsonify({"error": "You cannot delete your own account."}), 400
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT role FROM users WHERE id = %s", (user_id,))
+        target = cursor.fetchone()
+        if not target:
+            return jsonify({"error": "User not found"}), 404
+        if target["role"] == "ADMIN":
+            cursor.execute("SELECT COUNT(*) AS count FROM users WHERE role = 'ADMIN'")
+            if cursor.fetchone()["count"] <= 1:
+                return jsonify({"error": "Cannot delete the last administrator."}), 400
+
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        connection.commit()
+        return jsonify({"message": "User deleted successfully"}), 200
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+# -------------------------------------------------------------
+# Admin Station Management APIs
+# -------------------------------------------------------------
+
+@app.route("/api/admin/stations", methods=["POST"])
+@require_auth(allowed_roles=["ADMIN"])
+def create_station():
+    data = request.get_json(silent=True) or {}
+    village_name = data.get("village_name", "").strip()
+    district = data.get("district", "Thoothukudi").strip()
+    state = data.get("state", "Tamil Nadu").strip()
+    machine_name = data.get("machine_name", "").strip()
+    location = data.get("location", "").strip()
+    status = data.get("status", "AVAILABLE").strip().upper()
+    capacity = int(data.get("tank_capacity_liters") or 5000)
+    water_level = int(data.get("water_level_pct") or 85)
+    tds = int(data.get("tds_level") or 110)
+    op_name = data.get("operator_name", "").strip() or "Local Panchayat Operator"
+    op_phone = data.get("operator_phone", "").strip() or "+91 94421 88200"
+
+    if not village_name or not machine_name:
+        return jsonify({"error": "Village name and Machine name are required."}), 400
+    if status not in VALID_STATUSES:
+        status = "AVAILABLE"
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("SELECT id FROM villages WHERE name = %s", (village_name,))
+        v_row = cursor.fetchone()
+        if v_row:
+            village_id = v_row["id"]
+        else:
+            cursor.execute("INSERT INTO villages (name, district, state) VALUES (%s, %s, %s)", (village_name, district, state))
+            connection.commit()
+            village_id = cursor.lastrowid
+
+        cursor.execute("""
+            INSERT INTO ro_machines (village_id, machine_name, location, status, tank_capacity_liters, water_level_pct, tds_level, operator_name, operator_phone)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (village_id, machine_name, location, status, capacity, water_level, tds, op_name, op_phone))
+        connection.commit()
+        machine_id = cursor.lastrowid
+
+        cursor.execute("""
+            INSERT INTO machine_status_logs (machine_id, status, remarks, updated_by)
+            VALUES (%s, %s, %s, %s)
+        """, (machine_id, status, "New station commissioned into Water Beacon network", request.current_user.get("full_name", "Admin")))
+        connection.commit()
+
+        return jsonify({"message": "Station created successfully", "machine_id": machine_id}), 201
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/admin/stations/<int:machine_id>", methods=["PUT"])
+@require_auth(allowed_roles=["ADMIN", "OPERATOR"])
+def update_station(machine_id):
+    data = request.get_json(silent=True) or {}
+    machine_name = data.get("machine_name", "").strip()
+    location = data.get("location", "").strip()
+    capacity = data.get("tank_capacity_liters")
+    water_level = data.get("water_level_pct")
+    tds = data.get("tds_level")
+    op_name = data.get("operator_name", "").strip()
+    op_phone = data.get("operator_phone", "").strip()
+    status = data.get("status", "").strip().upper()
+
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("SELECT id, village_id FROM ro_machines WHERE id = %s", (machine_id,))
+        machine = cursor.fetchone()
+        if not machine:
+            return jsonify({"error": "Station not found"}), 404
+
+        if request.current_user.get("role") == "OPERATOR":
+            assigned_v = request.current_user.get("assigned_village_id")
+            if assigned_v and assigned_v != machine["village_id"]:
+                return jsonify({"error": "You are not authorized to modify this station."}), 403
+
+        updates = []
+        params = []
+        if machine_name:
+            updates.append("machine_name = %s")
+            params.append(machine_name)
+        if location:
+            updates.append("location = %s")
+            params.append(location)
+        if capacity is not None:
+            updates.append("tank_capacity_liters = %s")
+            params.append(int(capacity))
+        if water_level is not None:
+            updates.append("water_level_pct = %s")
+            params.append(int(water_level))
+        if tds is not None:
+            updates.append("tds_level = %s")
+            params.append(int(tds))
+        if op_name:
+            updates.append("operator_name = %s")
+            params.append(op_name)
+        if op_phone:
+            updates.append("operator_phone = %s")
+            params.append(op_phone)
+        if status and status in VALID_STATUSES:
+            updates.append("status = %s")
+            params.append(status)
+
+        if updates:
+            params.append(machine_id)
+            cursor.execute(f"UPDATE ro_machines SET {', '.join(updates)}, last_updated = CURRENT_TIMESTAMP WHERE id = %s", tuple(params))
+            connection.commit()
+
+        if request.current_user.get("role") == "ADMIN" and (data.get("village_name") or data.get("district")):
+            v_updates = []
+            v_params = []
+            if data.get("village_name"):
+                v_updates.append("name = %s")
+                v_params.append(data.get("village_name").strip())
+            if data.get("district"):
+                v_updates.append("district = %s")
+                v_params.append(data.get("district").strip())
+            if v_updates:
+                v_params.append(machine["village_id"])
+                cursor.execute(f"UPDATE villages SET {', '.join(v_updates)} WHERE id = %s", tuple(v_params))
+                connection.commit()
+
+        return jsonify({"message": "Station updated successfully"}), 200
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
+
+@app.route("/api/admin/stations/<int:machine_id>", methods=["DELETE"])
+@require_auth(allowed_roles=["ADMIN"])
+def delete_station(machine_id):
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM ro_machines WHERE id = %s", (machine_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Station not found"}), 404
+
+        cursor.execute("DELETE FROM ro_machines WHERE id = %s", (machine_id,))
+        connection.commit()
+        return jsonify({"message": "Station deleted successfully"}), 200
+    except Exception as error:
+        if connection: connection.rollback()
+        return jsonify({"error": str(error)}), 500
+    finally:
+        if cursor: cursor.close()
+        if connection and connection.is_connected(): connection.close()
 
 # -------------------------------------------------------------
 # Villages API

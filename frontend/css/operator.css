@@ -402,3 +402,575 @@ body.operator-body {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ==========================================================================
+   ENHANCED OPERATOR PORTAL - NAVIGATION, SINGLE RO OVERVIEW, ISSUES VIEW
+   ========================================================================== */
+
+/* Navigation Tabs */
+.op-nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 20px;
+}
+
+.op-nav-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.op-nav-tab:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.op-nav-tab.active {
+    color: #ffffff;
+    background: rgba(56, 189, 248, 0.16);
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.op-nav-badge {
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    line-height: 1.2;
+}
+
+/* Single RO Station Overview Card */
+.op-single-plant-card {
+    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.op-single-plant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.op-single-plant-header h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px;
+}
+
+.op-single-plant-header p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.op-single-plant-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.op-single-plant-tile {
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.op-single-plant-tile .tile-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.op-single-plant-tile .tile-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.op-single-plant-tile .tile-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+
+/* Progress bar inside tile */
+.tank-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.tank-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9, #10b981);
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+}
+
+/* Dedicated Issues Page */
+.op-issues-view {
+    display: none;
+}
+
+.op-issues-header-card {
+    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.op-issues-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.op-issues-title-row h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px;
+}
+
+.op-issues-title-row p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.op-filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.op-filter-btn {
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1.5px solid var(--border-light);
+    background: #f8fafc;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.op-filter-btn:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.op-filter-btn.active {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+/* Issues Grid */
+.op-issues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+}
+
+.op-issue-card {
+    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.op-issue-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.op-issue-card.status-pending::before { background: #ef4444; }
+.op-issue-card.status-investigating::before { background: #f59e0b; }
+.op-issue-card.status-resolved::before { background: #10b981; }
+
+.op-issue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07);
+    border-color: #cbd5e1;
+}
+
+.op-issue-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.op-issue-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.op-issue-card-desc {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.op-issue-card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-light);
+    padding-top: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.op-issue-card-meta strong {
+    color: #0f172a;
+}
+
+.op-issue-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Empty State */
+.op-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 24px;
+    background: #ffffff;
+    border: 1.5px dashed var(--border-light);
+    border-radius: var(--radius-xl);
+}
+
+.op-empty-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    color: #10b981;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 16px;
+}
+
+.op-empty-state h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.op-empty-state p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+/* Modal Issue Details */
+.op-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+}
+
+.op-modal-backdrop.active {
+    display: flex;
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.op-modal-box {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 540px;
+    width: 100%;
+    padding: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.op-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.op-modal-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.op-modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.op-modal-close:hover {
+    color: #0f172a;
+}
+
+.op-modal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.op-modal-detail-item label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.op-modal-detail-item span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.op-modal-desc-box {
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13.5px;
+    color: #334155;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.op-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border-light);
+    padding-top: 18px;
+}
+
+@media (max-width: 900px) {
+    .op-single-plant-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .op-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .op-nav-tabs {
+        margin-left: 0;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .op-single-plant-grid {
+        grid-template-columns: 1fr;
+    }
+    .op-issues-grid {
+        grid-template-columns: 1fr;
+    }
+    .op-modal-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   Operator Portal Toast Notifications & Broadcast Alerts
+   ========================================================================== */
+.toast-container {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-width: 440px !important;
+    pointer-events: auto !important;
+}
+
+.toast {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 16px 20px !important;
+    border-radius: 14px !important;
+    background: #0f766e !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 5px 15px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    opacity: 0 !important;
+    transform: translateY(16px) !important;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    pointer-events: auto !important;
+}
+
+.toast.show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.toast.toast-error {
+    background: #b91c1c !important;
+}
+
+.toast.toast-info {
+    background: #0369a1 !important;
+}
+
+/* Inline Controller Broadcast Banner */
+.op-status-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    background: #ecfdf5;
+    border: 1.5px solid #10b981;
+    color: #065f46;
+    font-size: 14px;
+    font-weight: 600;
+    animation: fadeInDown 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.op-status-alert.error {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.op-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.op-alert-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.op-status-alert.error .op-alert-icon {
+    background: #ef4444;
+}
+
+.op-alert-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: currentColor;
+    cursor: pointer;
+    opacity: 0.65;
+    padding: 0 4px;
+}
+
+.op-alert-close:hover {
+    opacity: 1;
+}

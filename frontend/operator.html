@@ -9,27 +9,52 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
+    <!-- Fonts: Inter & Noto Sans Tamil -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/operator.css">
 </head>
 <body class="operator-body">
 
     <!-- 1. OPERATOR AUTHENTICATION SCREEN -->
-    <div class="operator-login-wrapper" id="operator-auth-screen">
+    <div class="operator-login-wrapper" id="operator-auth-screen" style="position: relative;">
+        <!-- Auth Screen Language Switcher -->
+        <div style="position: absolute; top: 20px; right: 24px; z-index: 10;">
+            <div class="lang-selector-wrapper">
+                <button type="button" class="welcome-lang-btn" id="op-auth-lang-toggle" aria-haspopup="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; color: #0284c7;">
+                        <circle cx="12" cy="12" r="10"/><path d="M2 12H22M12 2A15.3 15.3 0 0 1 16 12A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 12 2Z"/>
+                    </svg>
+                    <span id="op-auth-lang-text">English</span>
+                </button>
+                <div class="welcome-lang-dropdown" id="op-auth-lang-menu">
+                    <button type="button" class="lang-dropdown-item active" data-lang-choice="en">
+                        <span>English</span>
+                        <span class="lang-dropdown-badge">EN</span>
+                    </button>
+                    <button type="button" class="lang-dropdown-item" data-lang-choice="ta">
+                        <span>தமிழ்</span>
+                        <span class="lang-dropdown-badge">TA</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="operator-login-card">
             <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px;">
                 <img src="assets/logo.svg" alt="Water Beacon Logo" width="48" height="48" style="filter: drop-shadow(0 4px 10px rgba(14,165,233,0.3));">
                 <div style="text-align: left;">
-                    <div style="font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1.1; letter-spacing: -0.02em;">Water <span style="color: var(--primary);">Beacon</span></div>
-                    <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Smart RO Telemetry</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1.1; letter-spacing: -0.02em;"><strong data-i18n="brandWater">Water</strong> <span style="color: var(--primary);" data-i18n="brandBeacon">Beacon</span></div>
+                    <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;" data-i18n="entryTag">Smart RO Telemetry</div>
                 </div>
             </div>
 
-            <span class="op-badge-pill">
+            <span class="op-badge-pill" data-i18n="operatorConsoleTag">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -37,13 +62,13 @@
                 PANCHAYAT OPERATOR PORTAL
             </span>
 
-            <h2>Sign in to Field Console</h2>
-            <p>Select your assigned village and enter your PIN to manage your RO water station.</p>
+            <h2 data-i18n="operatorModalTitle">Sign in to Field Console</h2>
+            <p data-i18n="adminPortalSubtitle">Select your assigned village and enter your PIN to manage your RO water station.</p>
 
             <form id="form-operator-login">
                 <!-- Select Village -->
                 <div class="form-group" style="text-align: left;">
-                    <label for="login-op-village">Select Your Village / RO Station</label>
+                    <label for="login-op-village" data-i18n="opSelectMachineLabel">Select Village RO Machine</label>
                     <select id="login-op-village" class="form-control" required>
                         <option value="" disabled selected>Loading village stations...</option>
                     </select>
@@ -51,18 +76,18 @@
 
                 <!-- Operator Name -->
                 <div class="form-group" style="text-align: left;">
-                    <label for="login-op-name">Operator Name</label>
+                    <label for="login-op-name" data-i18n="operatorNameLabel">Operator Name</label>
                     <input type="text" id="login-op-name" class="form-control" value="Muthu K (Panchayat Operator)" required>
                 </div>
 
                 <!-- Operator Access PIN -->
                 <div class="form-group" style="text-align: left;">
-                    <label for="login-op-pin">Operator Access PIN</label>
+                    <label for="login-op-pin" data-i18n="enterPinPlaceholder">Operator Access PIN (Default: 2026)</label>
                     <input type="password" id="login-op-pin" class="op-pin-input" maxlength="6" placeholder="••••" required autofocus autocomplete="current-password">
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;" id="btn-login-submit">
-                    <span>Unlock Operator Console</span>
+                    <span data-i18n="loginSubmitBtn">Unlock Operator Console</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="5" y1="12" x2="19" y2="12"/>
                         <polyline points="12 5 19 12 12 19"/>
@@ -71,7 +96,7 @@
 
                 <p class="pin-hint">Default Demonstration PIN: <strong>2026</strong></p>
                 <div style="margin-top: 18px;">
-                    <a href="/" style="font-size: 13px; color: var(--accent-teal); font-weight: 600;">&larr; Return to Public Citizen Website</a>
+                    <a href="/" style="font-size: 13px; color: var(--accent-teal); font-weight: 600;" data-i18n="returnWelcomeBtn">&larr; Return to Welcome Page</a>
                 </div>
             </form>
         </div>
@@ -83,130 +108,152 @@
         <!-- Top Navigation -->
         <header class="operator-topbar">
             <div class="operator-topbar-left">
-                <a href="/" class="brand" style="color: #ffffff;">
-                    <span class="brand-icon">
-                        <svg viewBox="0 0 48 48" fill="none">
-                            <defs>
-                                <linearGradient id="opDropGrad" x1="24" y1="6" x2="24" y2="44" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#0ea5e9"/>
-                                    <stop offset="50%" stop-color="#0284c7"/>
-                                    <stop offset="100%" stop-color="#0369a1"/>
-                                </linearGradient>
-                                <linearGradient id="opWaveGrad" x1="14" y1="12" x2="34" y2="18" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#38bdf8"/>
-                                    <stop offset="100%" stop-color="#10b981"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M14 16 C17 11 31 11 34 16" stroke="url(#opWaveGrad)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-                            <path d="M9 12 C15 5 33 5 39 12" stroke="url(#opWaveGrad)" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
-                            <path d="M24 6 C24 6 11 21 11 31 C11 38.18 16.82 44 24 44 C31.18 44 37 38.18 37 31 C37 21 24 6 24 6 Z" fill="url(#opDropGrad)"/>
-                            <path d="M19.5 39 L21.5 25 L26.5 25 L28.5 39 Z" fill="#ffffff" opacity="0.95"/>
-                            <rect x="21" y="21" width="6" height="4" rx="1" fill="#ffffff"/>
-                            <path d="M21.5 21 C21.5 18.8 26.5 18.8 26.5 21 Z" fill="#ffffff"/>
-                            <path d="M24 23 L37 16 L37 22 Z" fill="#ffffff" opacity="0.35"/>
-                            <path d="M24 23 L11 16 L11 22 Z" fill="#ffffff" opacity="0.35"/>
-                            <circle cx="24" cy="23" r="1.8" fill="#38bdf8"/>
-                            <path d="M15 28 C15.5 33 18.5 37 22 39" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
-                        </svg>
+                <a href="/" class="brand" style="color: #ffffff; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;">
+                    <span class="brand-icon" style="display: inline-flex; align-items: center;">
+                        <img src="assets/logo.svg" alt="Water Beacon Logo" width="34" height="34" style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); vertical-align: middle;">
                     </span>
-                    <span class="brand-text">
-                        <strong>Water</strong>
-                        <span style="color: #38bdf8;">Beacon</span>
+                    <span class="brand-text" style="display: inline-flex; align-items: baseline; gap: 4px; font-size: 19px;">
+                        <strong data-i18n="brandWater" style="color: #ffffff; font-weight: 800;">Water</strong>
+                        <span style="color: #38bdf8; font-weight: 800;" data-i18n="brandBeacon">Beacon</span>
                     </span>
                 </a>
-                <span class="operator-tag">Field Operator Console</span>
+                <span class="operator-tag" data-i18n="operatorConsoleTag">Field Operator Console</span>
+
+                <!-- Section Navigation Tabs: Dashboard & Issues -->
+                <nav class="op-nav-tabs" aria-label="Operator Navigation">
+                    <button type="button" class="op-nav-tab active" id="nav-op-dashboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        <span data-i18n="opNavDashboard">Dashboard</span>
+                    </button>
+                    <button type="button" class="op-nav-tab" id="nav-op-issues">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span data-i18n="opNavIssues">Issues</span>
+                        <span class="op-nav-badge" id="op-nav-issues-badge">0</span>
+                    </button>
+                </nav>
             </div>
 
             <div class="operator-topbar-right">
+                <!-- Global Language Selector Dropdown -->
+                <div class="lang-selector-wrapper">
+                    <button type="button" class="btn-ghost-light" id="op-lang-toggle" aria-haspopup="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;">
+                            <circle cx="12" cy="12" r="10"/><path d="M2 12H22M12 2A15.3 15.3 0 0 1 16 12A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 8 12A15.3 15.3 0 0 1 12 2Z"/>
+                        </svg>
+                        <span id="op-lang-text">English</span>
+                    </button>
+                    <div class="welcome-lang-dropdown" id="op-lang-menu">
+                        <button type="button" class="lang-dropdown-item active" data-lang-choice="en">
+                            <span>English</span>
+                            <span class="lang-dropdown-badge">EN</span>
+                        </button>
+                        <button type="button" class="lang-dropdown-item" data-lang-choice="ta">
+                            <span>தமிழ்</span>
+                            <span class="lang-dropdown-badge">TA</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="operator-user-info">
                     <strong id="header-operator-name">Operator</strong>
                     <span id="header-operator-village">Semmarikulam Station</span>
                 </div>
+
                 <a href="/" class="btn-ghost-light" title="View citizen site">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                         <polyline points="15 3 21 3 21 9"/>
                         <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
-                    <span>Public View</span>
+                    <span data-i18n="publicViewBtn">Public View</span>
                 </a>
+
                 <button type="button" class="btn-ghost-light" id="btn-operator-logout">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                         <polyline points="16 17 21 12 16 7"/>
                         <line x1="21" y1="12" x2="9" y2="12"/>
                     </svg>
-                    <span>Sign Out</span>
+                    <span data-i18n="signOutBtn">Sign Out</span>
                 </button>
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="operator-main">
 
-            <!-- Overview Stat Chips -->
-            <div class="op-stats-grid">
-                <div class="op-stat-card">
-                    <div class="op-stat-icon blue">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                            <line x1="8" y1="21" x2="16" y2="21"/>
-                            <line x1="12" y1="17" x2="12" y2="21"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <strong id="stat-total-plants">0</strong>
-                        <span>Total RO Plants</span>
-                    </div>
-                </div>
+            <!-- ======================================================== -->
+            <!-- VIEW 1: DASHBOARD VIEW (SINGLE-RO MACHINE FOCUSED)       -->
+            <!-- ======================================================== -->
+            <div id="view-op-dashboard" class="op-view-section">
 
-                <div class="op-stat-card">
-                    <div class="op-stat-icon green">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
+                <!-- Single RO Water Station Status Overview Card -->
+                <section class="op-single-plant-card">
+                    <div class="op-single-plant-header">
+                        <div>
+                            <span class="op-badge-pill" style="margin-bottom: 6px;" data-i18n="opPlantOverviewTitle">Village RO Water Plant Overview</span>
+                            <h2 id="single-plant-name">Semmarikulam Main RO Water Machine</h2>
+                            <p id="single-plant-village">Semmarikulam (Thoothukudi District)</p>
+                        </div>
+                        <div>
+                            <span class="status-badge available" id="single-plant-status-badge">
+                                <span class="indicator"></span>
+                                <span id="single-plant-status-text">AVAILABLE</span>
+                            </span>
+                        </div>
                     </div>
-                    <div>
-                        <strong id="stat-active-dispensing">0</strong>
-                        <span>Dispensing (Active)</span>
-                    </div>
-                </div>
 
-                <div class="op-stat-card">
-                    <div class="op-stat-icon amber">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <strong id="stat-under-maintenance">0</strong>
-                        <span>Under Maintenance</span>
-                    </div>
-                </div>
+                    <div class="op-single-plant-grid">
+                        <!-- Metric 1: Availability -->
+                        <div class="op-single-plant-tile">
+                            <span class="tile-label" data-i18n="opCurrentAvailability">Machine Availability</span>
+                            <div class="tile-val" id="tile-plant-status" style="color: #10b981;">AVAILABLE</div>
+                            <span class="tile-sub" data-i18n="reliableDesc">Telemetry verified by Panchayat</span>
+                        </div>
 
-                <div class="op-stat-card">
-                    <div class="op-stat-icon red">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
-                            <circle cx="12" cy="12" r="10"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <strong id="stat-citizen-reports">0</strong>
-                        <span>Citizen Issues</span>
-                    </div>
-                </div>
-            </div>
+                        <!-- Metric 2: Tank Level -->
+                        <div class="op-single-plant-tile">
+                            <span class="tile-label" data-i18n="opTankLevel">Overhead Tank Level</span>
+                            <div class="tile-val" id="tile-plant-level">85%</div>
+                            <div class="tank-progress-bar">
+                                <div class="tank-progress-fill" id="tile-plant-level-fill" style="width: 85%;"></div>
+                            </div>
+                        </div>
 
-            <!-- Workspace: Left (Status Controller) & Right (Citizen Complaints & Maintenance) -->
-            <div class="operator-workspace">
+                        <!-- Metric 3: Water Purity (TDS) -->
+                        <div class="op-single-plant-tile">
+                            <span class="tile-label" data-i18n="opWaterPurity">Water Purity (TDS)</span>
+                            <div class="tile-val"><span id="tile-plant-tds">110</span> <span style="font-size: 14px; font-weight: 600; color: #64748b;">PPM</span></div>
+                            <span class="tile-sub" style="color: #10b981; font-weight: 600;">✓ Pure Drinking Water</span>
+                        </div>
 
-                <!-- Left Column: Live Station Controller -->
+                        <!-- Metric 4: Last Status Updated -->
+                        <div class="op-single-plant-tile">
+                            <span class="tile-label" data-i18n="opLastUpdatedTime">Last Status Updated</span>
+                            <div class="tile-val" style="font-size: 15px; color: #0284c7;" id="tile-plant-updated-time">Just Now</div>
+                            <span class="tile-sub" id="tile-plant-updated-by">By Panchayat Operator</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live Station Status & Telemetry Controller (Quick Action) -->
                 <div class="op-panel">
                     <div class="op-panel-header">
-                        <h3>Live Station Telemetry & Status Controller</h3>
+                        <div>
+                            <h3 data-i18n="opUpdateControllerTitle">Live Station Telemetry & Status Controller</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 3px 0 0;" data-i18n="opUpdateControllerSubtitle">
+                                Broadcast immediate status updates to citizen portals and displays.
+                            </p>
+                        </div>
                         <span class="status-badge available" id="op-current-status-badge">
                             <span class="indicator"></span>
                             AVAILABLE
@@ -215,9 +262,9 @@
 
                     <div class="op-panel-body">
                         <form id="form-op-station-update">
-                            <!-- Select RO Station -->
+                            <!-- Select RO Machine -->
                             <div class="form-group">
-                                <label for="op-station-select">Select Village RO Machine</label>
+                                <label for="op-station-select" data-i18n="opSelectMachineLabel">Select Village RO Machine</label>
                                 <select id="op-station-select" class="form-control" required>
                                     <!-- Populated dynamically -->
                                 </select>
@@ -225,34 +272,34 @@
 
                             <!-- Status Switcher Grid -->
                             <div class="form-group">
-                                <label>Set Live Dispensing Status</label>
+                                <label data-i18n="opSetStatusLabel">Set Live Dispensing Status</label>
                                 <div class="status-pill-selector">
                                     <button type="button" class="status-choice-btn active" data-status="AVAILABLE">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" style="width: 18px; height: 18px;"><polyline points="20 6 9 17 4 12"/></svg>
-                                        <span>AVAILABLE</span>
+                                        <span data-i18n="statusAvailable">AVAILABLE</span>
                                     </button>
                                     <button type="button" class="status-choice-btn" data-status="OUT_OF_WATER">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" style="width: 18px; height: 18px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                        <span>OUT OF WATER</span>
+                                        <span data-i18n="statusOutOfWater">OUT OF WATER</span>
                                     </button>
                                     <button type="button" class="status-choice-btn" data-status="UNDER_MAINTENANCE">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="width: 18px; height: 18px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                                        <span>MAINTENANCE</span>
+                                        <span data-i18n="statusMaintenance">MAINTENANCE</span>
                                     </button>
                                     <button type="button" class="status-choice-btn" data-status="REPAIR">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" style="width: 18px; height: 18px;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                                        <span>REPAIR</span>
+                                        <span data-i18n="statusRepair">REPAIR</span>
                                     </button>
                                     <button type="button" class="status-choice-btn" data-status="TEMPORARILY_CLOSED">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" style="width: 18px; height: 18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                        <span>CLOSED</span>
+                                        <span data-i18n="statusClosed">CLOSED</span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Water Level Slider -->
                             <div class="form-group">
-                                <label for="op-slider-level">Overhead Tank Water Level (%)</label>
+                                <label for="op-slider-level" data-i18n="opTankLevelLabel">Overhead Tank Water Level (%)</label>
                                 <div class="level-slider-wrapper">
                                     <input type="range" id="op-slider-level" min="0" max="100" value="85">
                                     <div class="level-display-badge" id="op-level-badge">85%</div>
@@ -262,147 +309,186 @@
                             <!-- Purity TDS & Operator Name -->
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="op-tds-input">Water Purity TDS (PPM)</label>
+                                    <label for="op-tds-input" data-i18n="opTdsPurityLabel">Water Purity TDS (PPM)</label>
                                     <input type="number" id="op-tds-input" class="form-control" min="10" max="1000" value="110" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="op-name-input">Logged By (Operator Name)</label>
+                                    <label for="op-name-input" data-i18n="opLoggedByLabel">Logged By (Operator Name)</label>
                                     <input type="text" id="op-name-input" class="form-control" value="Muthu K (Panchayat Operator)" required>
                                 </div>
                             </div>
 
                             <!-- Status Notes / Remarks -->
                             <div class="form-group">
-                                <label for="op-remarks-input">Status Reason / Operator Notes</label>
-                                <textarea id="op-remarks-input" class="form-control" rows="2" placeholder="e.g. Regular morning filtration cycle completed. Water tank full."></textarea>
+                                <label for="op-remarks-input" data-i18n="opRemarksLabel">Status Reason / Operator Notes</label>
+                                <textarea id="op-remarks-input" class="form-control" rows="2" data-i18n-placeholder="opRemarksPlaceholder" placeholder="e.g. Regular morning filtration cycle completed. Water tank full."></textarea>
+                            </div>
+
+                            <!-- Inline Broadcast Confirmation Banner -->
+                            <div id="op-broadcast-banner" class="op-status-alert" style="display: none;">
+                                <div class="op-alert-content">
+                                    <span class="op-alert-icon">✓</span>
+                                    <span id="op-broadcast-banner-text">Machine status successfully updated and broadcasted.</span>
+                                </div>
+                                <button type="button" class="op-alert-close" id="btn-close-broadcast-banner" aria-label="Close alert">&times;</button>
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary" id="btn-broadcast-status" style="width: 100%; padding: 13px;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button type="submit" class="btn btn-primary" id="btn-broadcast-status" style="width: 100%; padding: 14px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
                                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                 </svg>
-                                <span>Broadcast Status Update to Network</span>
+                                <span data-i18n="btnBroadcastStatus">Broadcast Status Update to Network</span>
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Right Column: Citizen Reports & Maintenance Logger -->
-                <div>
-
-                    <!-- Citizen Reports Section -->
-                    <div class="op-panel">
-                        <div class="op-panel-header">
-                            <h3>Citizen Problem Reports</h3>
-                            <span class="chip-count" id="badge-pending-reports">0 Pending</span>
-                        </div>
-                        <div class="op-panel-body">
-                            <div class="op-reports-list" id="op-reports-container">
-                                <!-- Populated dynamically -->
-                            </div>
+                <!-- Recent Important Activity (Audit Trail Table) -->
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <h3 data-i18n="opRecentActivityTitle">Recent Machine Status Activity (Audit Trail)</h3>
+                        <button type="button" class="btn btn-outline btn-sm" id="btn-refresh-audit-logs">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </svg>
+                            <span data-i18n="refreshLogs">Refresh Logs</span>
+                        </button>
+                    </div>
+                    <div class="op-panel-body" style="padding: 0;">
+                        <div class="table-responsive">
+                            <table class="audit-table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="thMachine">Station / Machine</th>
+                                        <th data-i18n="thStatusSet">Status Set</th>
+                                        <th data-i18n="thRemarks">Remarks / Reason</th>
+                                        <th data-i18n="thLoggedBy">Logged By</th>
+                                        <th data-i18n="thTimestamp">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-logs-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
-                    <!-- Preventative Maintenance Ticket Scheduler -->
-                    <div class="op-panel">
-                        <div class="op-panel-header">
-                            <h3>Schedule Maintenance Ticket</h3>
-                        </div>
-                        <div class="op-panel-body">
-                            <form id="form-op-create-maint">
-                                <div class="form-group">
-                                    <label for="op-maint-machine">Target RO Station</label>
-                                    <select id="op-maint-machine" class="form-control" required>
-                                        <!-- Populated dynamically -->
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="op-maint-task">Service Task Type</label>
-                                    <select id="op-maint-task" class="form-control" required>
-                                        <option value="Sediment & Carbon Filter Replacement">Sediment & Carbon Filter Replacement</option>
-                                        <option value="RO Membrane Descaling & Chemical Flushing">RO Membrane Descaling & Flushing</option>
-                                        <option value="UV Sterilizer Lamp Replacement">UV Sterilizer Lamp Replacement</option>
-                                        <option value="High-Pressure Booster Pump Service">High-Pressure Booster Pump Service</option>
-                                        <option value="Raw Water TDS Sensor Calibration">Raw Water TDS Sensor Calibration</option>
-                                        <option value="Storage Tank Sanitization & Bleach">Storage Tank Sanitization</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="op-maint-desc">Scope / Reason</label>
-                                    <input type="text" id="op-maint-desc" class="form-control" placeholder="e.g. Scheduled quarterly multi-stage carbon filter change." required>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="op-maint-tech">Assigned Tech</label>
-                                        <input type="text" id="op-maint-tech" class="form-control" value="District Water Technician" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="op-maint-date">Expected Resolution</label>
-                                        <input type="date" id="op-maint-date" class="form-control">
-                                    </div>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 16px;">
-                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 13px;">
-                                        <input type="checkbox" id="op-maint-auto-status" checked style="width: 16px; height: 16px;">
-                                        <span>Automatically flag station as <strong>UNDER MAINTENANCE</strong></span>
-                                    </label>
-                                </div>
-
-                                <button type="submit" class="btn btn-outline" style="width: 100%;" id="btn-create-maint">
-                                    <span>Log Maintenance Ticket</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
 
-            <!-- Full Width Audit Trail Section -->
-            <div class="op-panel">
-                <div class="op-panel-header">
-                    <h3>Recent Station Status Changes (Audit Trail)</h3>
-                    <button type="button" class="btn btn-outline btn-sm" id="btn-refresh-audit-logs">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                        </svg>
-                        <span>Refresh Logs</span>
-                    </button>
-                </div>
-                <div class="op-panel-body" style="padding: 0;">
-                    <div class="table-responsive">
-                        <table class="audit-table">
-                            <thead>
-                                <tr>
-                                    <th>Station</th>
-                                    <th>Status Set</th>
-                                    <th>Remarks / Note</th>
-                                    <th>Logged By</th>
-                                    <th>Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="audit-logs-tbody">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
+            <!-- ======================================================== -->
+            <!-- VIEW 2: DEDICATED ISSUES PAGE VIEW                      -->
+            <!-- ======================================================== -->
+            <div id="view-op-issues" class="op-issues-view">
+
+                <div class="op-issues-header-card">
+                    <div class="op-issues-title-row">
+                        <div>
+                            <h2 data-i18n="opIssuesPageTitle">Citizen Reported Issues</h2>
+                            <p data-i18n="opIssuesPageSubtitle">
+                                Review, investigate, and resolve drinking water complaints submitted by community residents.
+                            </p>
+                        </div>
+                        <div class="op-filter-tabs">
+                            <button type="button" class="op-filter-btn active" data-filter="ALL" data-i18n="filterAll">All Issues</button>
+                            <button type="button" class="op-filter-btn" data-filter="PENDING" data-i18n="filterPending">Pending</button>
+                            <button type="button" class="op-filter-btn" data-filter="INVESTIGATING" data-i18n="filterInvestigating">Investigating</button>
+                            <button type="button" class="op-filter-btn" data-filter="RESOLVED" data-i18n="filterResolved">Resolved</button>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Issues Grid Container -->
+                <div class="op-issues-grid" id="issues-grid-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="op-empty-state" id="issues-empty-state" style="display: none;">
+                    <div class="op-empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 32px; height: 32px;">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="noIssuesTitle">No Citizen Issues Reported</h3>
+                    <p data-i18n="noIssuesSubtitle">
+                        All community RO water dispensing operations are running smoothly without any reported complaints.
+                    </p>
+                </div>
+
             </div>
 
         </main>
     </div>
 
-    <!-- TOAST NOTIFICATIONS -->
+    <!-- ============================================================ -->
+    <!-- ISSUE DETAILS & STATUS RESOLUTION MODAL                      -->
+    <!-- ============================================================ -->
+    <div class="op-modal-backdrop" id="modal-issue-details">
+        <div class="op-modal-box">
+            <div class="op-modal-header">
+                <h3 data-i18n="issueDetailsModalTitle">Citizen Issue Details & Status Resolution</h3>
+                <button type="button" class="op-modal-close" id="btn-close-issue-modal" aria-label="Close modal">&times;</button>
+            </div>
+
+            <div class="op-modal-details-grid">
+                <div class="op-modal-detail-item">
+                    <label data-i18n="thMachine">Station / Machine</label>
+                    <span id="modal-issue-station">—</span>
+                </div>
+                <div class="op-modal-detail-item">
+                    <label data-i18n="issueStatus">Status</label>
+                    <span id="modal-issue-status-badge">—</span>
+                </div>
+                <div class="op-modal-detail-item">
+                    <label data-i18n="issueCategory">Category</label>
+                    <span id="modal-issue-category">—</span>
+                </div>
+                <div class="op-modal-detail-item">
+                    <label data-i18n="issueDate">Reported Date</label>
+                    <span id="modal-issue-date">—</span>
+                </div>
+                <div class="op-modal-detail-item">
+                    <label data-i18n="issueReportedBy">Reported By</label>
+                    <span id="modal-issue-reporter">—</span>
+                </div>
+                <div class="op-modal-detail-item">
+                    <label data-i18n="issuePhone">Phone</label>
+                    <span id="modal-issue-phone">—</span>
+                </div>
+            </div>
+
+            <div class="op-modal-detail-item" style="margin-bottom: 8px;">
+                <label data-i18n="issueDescription">Description</label>
+            </div>
+            <div class="op-modal-desc-box" id="modal-issue-description">
+                <!-- Description text -->
+            </div>
+
+            <div class="op-modal-actions">
+                <button type="button" class="btn btn-outline" id="modal-btn-close">
+                    <span data-i18n="closeBtn">Close</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="modal-btn-investigating" data-action="INVESTIGATING">
+                    <span data-i18n="btnMarkInvestigating">Mark Investigating</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="modal-btn-resolved" data-action="RESOLVED" style="background: #10b981; border-color: #10b981;">
+                    <span data-i18n="btnMarkResolved">Mark Resolved ✓</span>
+                </button>
+                <button type="button" class="btn btn-outline" id="modal-btn-reopen" data-action="PENDING" style="display: none;">
+                    <span data-i18n="btnReopenIssue">Reopen Issue</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div class="toast-container" id="toast-container"></div>
 
-    <script src="js/app.js"></script>
+    <!-- Core Scripts -->
+    <script src="js/language.js"></script>
     <script src="js/operator.js"></script>
 </body>
 </html>

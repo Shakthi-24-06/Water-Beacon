@@ -2,6 +2,7 @@
 import sys
 import os
 import mysql.connector
+from werkzeug.security import generate_password_hash
 
 # Ensure backend directory is in python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -45,6 +46,43 @@ def migrate_and_seed():
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     """)
     connection.commit()
+
+    print("Checking users table for Admin and Operator roles...")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            password_hash VARCHAR(255) NOT NULL,
+            full_name VARCHAR(100) NOT NULL,
+            role ENUM('ADMIN', 'OPERATOR') NOT NULL DEFAULT 'OPERATOR',
+            phone VARCHAR(50) DEFAULT NULL,
+            assigned_village_id INT DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (assigned_village_id) REFERENCES villages(id) ON DELETE SET NULL ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    """)
+    connection.commit()
+
+    # Seed default Admin and Operator accounts
+    default_users = [
+        ("admin", generate_password_hash("Admin@2026"), "District Water Admin", "ADMIN", "+91 94420 10000", None),
+        ("operator", generate_password_hash("Operator@2026"), "Muthu K (Panchayat Operator)", "OPERATOR", "+91 94421 88200", 1),
+        ("selvam", generate_password_hash("Operator@2026"), "Selvam R", "OPERATOR", "+91 94422 11001", 2),
+        ("murugan", generate_password_hash("Operator@2026"), "Murugan S", "OPERATOR", "+91 94423 22002", 3)
+    ]
+
+    for uname, p_hash, fname, role, phone, v_id in default_users:
+        cursor.execute("SELECT id FROM users WHERE username = %s", (uname,))
+        existing = cursor.fetchone()
+        if not existing:
+            cursor.execute("""
+                INSERT INTO users (username, password_hash, full_name, role, phone, assigned_village_id)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (uname, p_hash, fname, role, phone, v_id))
+            connection.commit()
+            print(f"  Created user: {uname} ({role})")
+        else:
+            print(f"  User {uname} already exists.")
 
     # Seed additional villages if only 1 exists
     cursor.execute("SELECT COUNT(*) AS count FROM villages")
