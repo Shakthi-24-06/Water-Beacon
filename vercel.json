@@ -1,4 +1,5 @@
 {
+  "framework": "flask",
   "rewrites": [
     {
       "source": "/(.*)",
