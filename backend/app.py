@@ -4,9 +4,21 @@ import io
 import os
 import secrets
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory, Response
 from werkzeug.security import generate_password_hash, check_password_hash
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def format_iso_ist(dt):
+    """Format datetime into consistent ISO 8601 string with Asia/Kolkata (+05:30) offset"""
+    if not dt:
+        return None
+    if isinstance(dt, str):
+        return dt
+    if hasattr(dt, "tzinfo") and dt.tzinfo is None:
+        dt = dt.replace(tzinfo=IST)
+    return dt.isoformat()
 
 # Ensure backend directory is in sys.path
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -287,7 +299,7 @@ def get_admin_users():
         users = cursor.fetchall()
         for u in users:
             if u.get("created_at"):
-                u["created_at"] = u["created_at"].isoformat()
+                u["created_at"] = format_iso_ist(u.get("created_at"))
         return jsonify(users), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
@@ -627,7 +639,7 @@ def get_villages():
 
         for item in villages:
             if item.get("last_updated"):
-                item["last_updated"] = item["last_updated"].isoformat()
+                item["last_updated"] = format_iso_ist(item.get("last_updated"))
 
         return jsonify(villages)
 
@@ -680,7 +692,7 @@ def get_village_status(village_id):
             }), 404
 
         if result.get("last_updated"):
-            result["last_updated"] = result["last_updated"].isoformat()
+            result["last_updated"] = format_iso_ist(result["last_updated"])
 
         return jsonify(result)
 
@@ -747,7 +759,7 @@ def get_machines():
 
         for m in machines:
             if m.get("last_updated"):
-                m["last_updated"] = m["last_updated"].isoformat()
+                m["last_updated"] = format_iso_ist(m.get("last_updated"))
 
         return jsonify(machines)
 
@@ -796,7 +808,7 @@ def get_machine(machine_id):
             return jsonify({"error": "RO machine not found"}), 404
 
         if machine.get("last_updated"):
-            machine["last_updated"] = machine["last_updated"].isoformat()
+            machine["last_updated"] = format_iso_ist(machine["last_updated"])
 
         return jsonify(machine)
 
@@ -895,7 +907,7 @@ def update_machine_status(machine_id):
         updated = cursor.fetchone()
 
         if updated.get("last_updated"):
-            updated["last_updated"] = updated["last_updated"].isoformat()
+            updated["last_updated"] = format_iso_ist(updated["last_updated"])
 
         return jsonify({
             "message": "Status updated successfully",
@@ -932,7 +944,7 @@ def get_machine_logs(machine_id):
                 l.created_at
             FROM machine_status_logs l
             WHERE l.machine_id = %s
-            ORDER BY l.created_at DESC
+            ORDER BY l.created_at DESC, l.id DESC
             LIMIT 50
         """, (machine_id,))
 
@@ -940,7 +952,7 @@ def get_machine_logs(machine_id):
 
         for log in logs:
             if log.get("created_at"):
-                log["created_at"] = log["created_at"].isoformat()
+                log["created_at"] = format_iso_ist(log["created_at"])
 
         return jsonify(logs)
 
@@ -998,7 +1010,7 @@ def get_maintenance_records():
             query += " AND m.machine_id = %s"
             params.append(int(machine_id))
 
-        query += " ORDER BY m.started_at DESC"
+        query += " ORDER BY m.started_at DESC, m.id DESC"
 
         cursor.execute(query, tuple(params))
         records = cursor.fetchall()
@@ -1006,7 +1018,7 @@ def get_maintenance_records():
         for rec in records:
             for field in ["started_at", "expected_end_at", "completed_at"]:
                 if rec.get(field):
-                    rec[field] = rec[field].isoformat()
+                    rec[field] = format_iso_ist(rec[field])
 
         return jsonify(records)
 
@@ -1198,14 +1210,14 @@ def handle_reports():
             FROM community_reports c
             JOIN ro_machines r ON c.machine_id = r.id
             JOIN villages v ON r.village_id = v.id
-            ORDER BY c.created_at DESC
+            ORDER BY c.created_at DESC, c.id DESC
             LIMIT 50
         """)
 
         reports = cursor.fetchall()
         for r in reports:
             if r.get("created_at"):
-                r["created_at"] = r["created_at"].isoformat()
+                r["created_at"] = format_iso_ist(r["created_at"])
 
         return jsonify(reports)
 

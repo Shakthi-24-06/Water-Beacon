@@ -388,11 +388,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tilePlantTds) tilePlantTds.textContent = tds;
 
         if (tilePlantUpdatedTime) {
-            if (currentMachine.last_status_update) {
-                const dateObj = new Date(currentMachine.last_status_update);
-                tilePlantUpdatedTime.textContent = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ", " + dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            const ts = currentMachine.last_updated;
+            if (ts) {
+                tilePlantUpdatedTime.textContent = (typeof window.formatTimestampIST === "function")
+                    ? window.formatTimestampIST(ts, "datetime")
+                    : ts;
             } else {
-                tilePlantUpdatedTime.textContent = tr("notAvailable", "Just Now");
+                tilePlantUpdatedTime.textContent = tr("notAvailable", "N/A");
             }
         }
 
@@ -492,12 +494,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!res.ok) throw new Error("Status update failed");
 
-            // Update in-memory machine state
-            if (currentMachine) {
+            const resData = await res.json();
+            if (resData.machine) {
+                currentMachine = resData.machine;
+                if (Array.isArray(allMachines)) {
+                    const idx = allMachines.findIndex(m => String(m.id) === String(resData.machine.id));
+                    if (idx !== -1) {
+                        allMachines[idx] = resData.machine;
+                    }
+                }
+            } else if (currentMachine) {
                 currentMachine.status = selectedStatus;
                 currentMachine.water_level_pct = parseInt(slider.value, 10);
                 currentMachine.tds_level = parseInt(tdsInput.value, 10);
-                currentMachine.last_status_update = new Date().toISOString();
             }
 
             updateSinglePlantDisplay();
@@ -584,7 +593,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const vName = (typeof window.translateVillage === "function") ? window.translateVillage(r.village_name) : r.village_name;
             const category = (typeof window.translateIssue === "function") ? window.translateIssue(r.issue_type) : r.issue_type;
             const desc = (typeof window.translateDescription === "function") ? window.translateDescription(r.description || "") : (r.description || tr("noDescription", "No description provided."));
-            const dateStr = r.created_at ? new Date(r.created_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "—";
+            const dateStr = r.created_at
+                ? ((typeof window.formatTimestampIST === "function") ? window.formatTimestampIST(r.created_at, "datetime") : new Date(r.created_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }))
+                : "—";
 
             return `
                 <div class="op-issue-card status-${sClass}" data-report-id="${r.id}">
@@ -693,7 +704,9 @@ document.addEventListener("DOMContentLoaded", () => {
             modalIssuePhone.innerHTML = `<a href="tel:${report.reporter_phone}" style="color: #0284c7; text-decoration: none;">${report.reporter_phone}</a>`;
         }
         if (modalIssueDate) {
-            modalIssueDate.textContent = report.created_at ? new Date(report.created_at).toLocaleString([], { dateStyle: "long", timeStyle: "short" }) : "—";
+            modalIssueDate.textContent = report.created_at
+                ? ((typeof window.formatTimestampIST === "function") ? window.formatTimestampIST(report.created_at, "datetime") : new Date(report.created_at).toLocaleString([], { dateStyle: "long", timeStyle: "short" }))
+                : "—";
         }
         if (modalIssueDesc) modalIssueDesc.textContent = desc;
 
@@ -787,7 +800,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const status = l.status || "AVAILABLE";
             const sClass = status.toLowerCase().replace(/_/g, "-");
             const statusLabel = (typeof window.getStatusLabel === "function") ? window.getStatusLabel(status) : status;
-            const time = l.created_at ? new Date(l.created_at).toLocaleString(lang === "ta" ? "ta-IN" : "en-US", { dateStyle: "short", timeStyle: "short" }) : "—";
+            const time = l.created_at
+                ? ((typeof window.formatTimestampIST === "function") ? window.formatTimestampIST(l.created_at, "datetime") : new Date(l.created_at).toLocaleString(lang === "ta" ? "ta-IN" : "en-US", { dateStyle: "short", timeStyle: "short" }))
+                : "—";
             const rawOp = l.updated_by || "Operator";
             const transOp = (typeof window.translateOperator === "function") ? window.translateOperator(rawOp) : rawOp;
             const remarks = (typeof window.translateRemarks === "function") ? window.translateRemarks(l.remarks || "") : ((typeof window.translateDescription === "function") ? window.translateDescription(l.remarks || "") : (l.remarks || "—"));

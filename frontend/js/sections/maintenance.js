@@ -149,6 +149,9 @@ async function initMaintenance() {
     }
 
     function formatDate(val) {
+        if (typeof window.formatTimestampIST === "function") {
+            return window.formatTimestampIST(val, "date");
+        }
         if (!val) return t("notAvailable", "N/A");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;

@@ -183,6 +183,9 @@ async function initStatus() {
     }
 
     function formatTime(val) {
+        if (typeof window.formatTimestampIST === "function") {
+            return window.formatTimestampIST(val, "time_parens_date");
+        }
         if (!val) return t("justNow", "Just now");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;

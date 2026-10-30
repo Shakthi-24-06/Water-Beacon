@@ -1233,6 +1233,65 @@ window.translateStationName = function(machineName, villageName = "") {
     return translated;
 };
 
+/**
+ * Shared Indian Standard Time (IST, UTC+05:30) date & time formatter.
+ * Standardizes timestamp display across Operator Portal, Audit Trail, and Public Citizen Portal.
+ * Handles ISO strings with/without timezone offsets, Date objects, and epoch timestamps.
+ */
+window.formatTimestampIST = function(val, style = "datetime") {
+    if (!val) {
+        return (typeof window.t === "function") ? window.t("notAvailable", "N/A") : "N/A";
+    }
+    let dateObj;
+    if (val instanceof Date) {
+        dateObj = val;
+    } else if (typeof val === "string") {
+        let str = val.trim();
+        // If string matches YYYY-MM-DDTHH:mm:ss without timezone, treat as IST (+05:30)
+        if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?$/.test(str)) {
+            str = str.replace(" ", "T") + "+05:30";
+        }
+        dateObj = new Date(str);
+    } else {
+        dateObj = new Date(val);
+    }
+
+    if (isNaN(dateObj.getTime())) {
+        return (typeof window.t === "function") ? window.t("notAvailable", "N/A") : "N/A";
+    }
+
+    const lang = (typeof currentLanguage !== "undefined" && currentLanguage === "ta") ? "ta-IN" : "en-IN";
+    const tz = "Asia/Kolkata";
+
+    if (style === "date") {
+        return dateObj.toLocaleDateString(lang, {
+            timeZone: tz,
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
+
+    const timeStr = dateObj.toLocaleTimeString(lang, {
+        timeZone: tz,
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+    const dateStr = dateObj.toLocaleDateString(lang, {
+        timeZone: tz,
+        month: "short",
+        day: "numeric"
+    });
+
+    if (style === "time_parens_date") {
+        return `${timeStr} (${dateStr})`;
+    }
+
+    return `${timeStr}, ${dateStr}`;
+};
+
+window.formatTime = window.formatTimestampIST;
+
 // Immediate root attribute setup
 document.documentElement.lang = currentLanguage;
 document.documentElement.setAttribute("data-lang", currentLanguage);

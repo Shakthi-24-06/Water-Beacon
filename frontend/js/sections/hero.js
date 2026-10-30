@@ -132,6 +132,9 @@ async function initHero() {
     }
 
     function formatTime(val) {
+        if (typeof window.formatTimestampIST === "function") {
+            return window.formatTimestampIST(val, "datetime");
+        }
         if (!val) return t("justNow", "Just now");
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;

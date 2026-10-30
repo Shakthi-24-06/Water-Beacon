@@ -9,4 +9,11 @@ if CURRENT_DIR not in sys.path:
 from config import DB_CONFIG
 
 def get_db_connection():
-    return mysql.connector.connect(**DB_CONFIG)
+    conn = mysql.connector.connect(**DB_CONFIG)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SET time_zone = '+05:30'")
+        cursor.close()
+    except Exception:
+        pass
+    return conn
