@@ -581,12 +581,26 @@ def delete_station(machine_id):
     try:
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT id FROM ro_machines WHERE id = %s", (machine_id,))
-        if not cursor.fetchone():
+        cursor.execute("SELECT id, village_id FROM ro_machines WHERE id = %s", (machine_id,))
+        machine = cursor.fetchone()
+        if not machine:
             return jsonify({"error": "Station not found"}), 404
 
+        village_id = machine.get("village_id")
         cursor.execute("DELETE FROM ro_machines WHERE id = %s", (machine_id,))
         connection.commit()
+
+        # Clean up orphaned village if no remaining stations or assigned users
+        if village_id:
+            cursor.execute("SELECT COUNT(*) AS count FROM ro_machines WHERE village_id = %s", (village_id,))
+            rem = cursor.fetchone()
+            if rem and rem["count"] == 0:
+                cursor.execute("SELECT COUNT(*) AS count FROM users WHERE assigned_village_id = %s", (village_id,))
+                user_rem = cursor.fetchone()
+                if not user_rem or user_rem["count"] == 0:
+                    cursor.execute("DELETE FROM villages WHERE id = %s", (village_id,))
+                    connection.commit()
+
         return jsonify({"message": "Station deleted successfully"}), 200
     except Exception as error:
         if connection: connection.rollback()
@@ -623,12 +637,12 @@ def get_villages():
                 r.tank_capacity_liters,
                 r.last_updated
             FROM villages v
-            LEFT JOIN ro_machines r ON v.id = r.village_id
+            JOIN ro_machines r ON v.id = r.village_id
         """
         params = []
 
         if search:
-            query += " WHERE v.name LIKE %s OR v.district LIKE %s OR r.machine_name LIKE %s"
+            query += " WHERE (v.name LIKE %s OR v.district LIKE %s OR r.machine_name LIKE %s)"
             wildcard = f"%{search}%"
             params.extend([wildcard, wildcard, wildcard])
 

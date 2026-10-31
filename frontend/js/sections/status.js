@@ -35,7 +35,11 @@ async function initStatus() {
             const villages = await res.json();
 
             if (stationSelect) {
-                stationSelect.innerHTML = villages.map(v => {
+                const validVillages = (villages || []).filter(v =>
+                    v && v.machine_id && !v.name.toLowerCase().includes("test")
+                );
+
+                stationSelect.innerHTML = validVillages.map(v => {
                     const vName = (typeof window.translateVillage === "function") ? window.translateVillage(v.name) : v.name;
                     const dist = (typeof window.translateDistrict === "function") ? window.translateDistrict(v.district) : v.district;
                     const mName = (typeof window.translateMachine === "function") ? window.translateMachine(v.machine_name) : (v.machine_name || "RO Unit");

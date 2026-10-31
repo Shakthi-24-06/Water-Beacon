@@ -152,7 +152,8 @@ async function initHero() {
         try {
             const res = await fetch("/api/villages");
             if (res.ok) {
-                allVillagesCache = await res.json();
+                const list = await res.json();
+                allVillagesCache = (list || []).filter(v => v && v.machine_id && !v.name.toLowerCase().includes("test"));
             }
         } catch (e) {
             console.warn("Preload villages error:", e);
